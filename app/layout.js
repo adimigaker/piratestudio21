@@ -1,3 +1,7 @@
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import './globals.css';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="id">
@@ -7,8 +11,10 @@ export default function RootLayout({ children }) {
         <title>Pirate Studio 21 - Streaming Film & Series</title>
         <meta name="description" content="Nonton streaming film dan series subtitle Indonesia gratis. Koleksi film terbaru dan terlengkap." />
       </head>
-      <body style={{ backgroundColor: '#0a0a0f', color: 'white', fontFamily: 'Arial, sans-serif', margin: 0, padding: 0 }}>
-        {children}
+      <body>
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );
