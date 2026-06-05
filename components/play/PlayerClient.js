@@ -111,7 +111,7 @@ const Icons = {
     </svg>
   ),
   star: () => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
     </svg>
   ),
@@ -317,7 +317,7 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Info Film - Desain Lama dengan Poster */}
+      {/* Info Film - Desain Lama dengan Poster, tanpa Type */}
       <div className="container" style={{ maxWidth: '900px', marginTop: '24px' }}>
         <div className="info-grid">
           {/* Poster */}
@@ -332,7 +332,6 @@ export default function PlayerClient({ film }) {
           <div className="info-details">
             <h1 className="info-title">
               {film.title} ({film.year})
-              {isSeries && <span style={{ color: '#e50914', fontSize: '0.6em', marginLeft: '10px' }}>SERIES</span>}
             </h1>
             
             <div className="info-meta">
@@ -358,7 +357,7 @@ export default function PlayerClient({ film }) {
               </div>
             )}
             
-            {/* Director & Cast & Type */}
+            {/* Director & Cast (tanpa Type) */}
             <div className="info-more">
               {film.director && (
                 <div className="info-more-item">
