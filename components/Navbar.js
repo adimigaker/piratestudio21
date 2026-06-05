@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = async (e) => {
     const query = e.target.value;
@@ -21,24 +24,37 @@ export default function Navbar() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <nav className="navbar" id="navbar">
-      <a href="/" className="logo">
-        <span className="brand-pirate">PIRATE</span>
-        <span className="brand-studio">STUDIO</span>
-        <span className="brand-num">21</span>
+      <a href="/" className="logo" style={{ fontWeight: 'bold', letterSpacing: '2px' }}>
+        <span className="brand-pirate" style={{ color: '#e50914', fontWeight: 'bold' }}>PIRATE</span>
+        <span className="brand-studio" style={{ color: '#e8e8f0', fontWeight: 'bold' }}>STUDIO</span>
+        <span className="brand-num" style={{ color: '#e8e8f0', opacity: 0.7, fontWeight: 'bold' }}>21</span>
       </a>
       
-      <div className="search-wrap" id="search-wrap">
+      <div className="search-wrap" style={{ position: 'relative' }}>
         <svg className="search-icon" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input 
           type="text" 
-          className="search-input" 
+          className={`search-input ${isFocused ? 'focused' : ''}`}
           placeholder="Cari judul film..." 
           value={searchQuery}
           onChange={handleSearch}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+          style={{
+            width: isFocused ? '260px' : '200px',
+            transition: 'width 0.3s ease'
+          }}
         />
         
         {showDropdown && searchResults.length > 0 && (
