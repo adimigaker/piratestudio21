@@ -202,12 +202,18 @@ export default function HomeClient({
   }
 
   const filterByGenre = (genre) => {
+    const currentScrollY = window.scrollY
     setActiveGenre(genre)
+    
     if (genre === '') {
-      router.push(pathname)
+      router.push(pathname, { scroll: false })
     } else {
-      router.push(`/?genre=${encodeURIComponent(genre)}`)
+      router.push(`/?genre=${encodeURIComponent(genre)}`, { scroll: false })
     }
+    
+    setTimeout(() => {
+      window.scrollTo(0, currentScrollY)
+    }, 50)
   }
 
   useEffect(() => {
