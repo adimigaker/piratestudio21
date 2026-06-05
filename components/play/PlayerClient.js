@@ -313,10 +313,11 @@ export default function PlayerClient({ film }) {
           {isSeries && <span style={{ color: '#e50914', fontSize: '0.6em', marginLeft: '10px' }}>SERIES</span>}
         </h1>
 
+        {/* Sinopsis dengan HTML rendering */}
         {film.synopsis && (
           <div className="info-synopsis" style={{ marginTop: '12px' }}>
             <div className="info-synopsis-label">Sinopsis</div>
-            <p>{film.synopsis}</p>
+            <p dangerouslySetInnerHTML={{ __html: film.synopsis }} />
           </div>
         )}
 
