@@ -1,21 +1,31 @@
 import { supabase } from '@/lib/supabaseClient'
 import HomeClient from '@/components/home/HomeClient'
 
-async function getFilmsCount() {
-  const { count, error } = await supabase
-    .from('PirateStudio21_DB')
-    .select('*', { count: 'exact', head: true })
-  
-  return count || 0
-}
-
-async function getFilms(limit = 10, offset = 0) {
-  const { data } = await supabase
+async function getFilmsByGenre(genre, limit = 10, offset = 0) {
+  let query = supabase
     .from('PirateStudio21_DB')
     .select('*')
     .order('year', { ascending: false })
-    .range(offset, offset + limit - 1)
+  
+  if (genre && genre !== '') {
+    query = query.ilike('genre', `%${genre}%`)
+  }
+  
+  const { data } = await query.range(offset, offset + limit - 1)
   return data || []
+}
+
+async function getFilmsCount(genre) {
+  let query = supabase
+    .from('PirateStudio21_DB')
+    .select('*', { count: 'exact', head: true })
+  
+  if (genre && genre !== '') {
+    query = query.ilike('genre', `%${genre}%`)
+  }
+  
+  const { count } = await query
+  return count || 0
 }
 
 async function getFeatured() {
@@ -56,10 +66,13 @@ async function getGenres() {
   return Array.from(genreSet).sort()
 }
 
-export default async function Home() {
-  const [initialFilms, totalFilms, featured, popular, genres] = await Promise.all([
-    getFilms(10, 0),  // 10 film pertama untuk initial load
-    getFilmsCount(),
+export default async function Home({ searchParams }) {
+  const { genre } = await searchParams
+  const activeGenre = genre || ''
+  
+  const [initialFilms, totalFilms, featured, popular, allGenres] = await Promise.all([
+    getFilmsByGenre(activeGenre, 10, 0),
+    getFilmsCount(activeGenre),
     getFeatured(),
     getPopular(),
     getGenres()
@@ -67,15 +80,16 @@ export default async function Home() {
   
   const randomFeatured = featured.length > 0 
     ? featured[Math.floor(Math.random() * featured.length)]
-    : null
+    : (initialFilms[0] || null)
 
   return (
     <HomeClient 
       initialFilms={initialFilms}
       totalFilms={totalFilms}
-      initialGenres={genres}
+      initialGenres={allGenres}
       featuredFilm={randomFeatured}
       popularFilms={popular}
+      initialGenre={activeGenre}
     />
   )
 }
