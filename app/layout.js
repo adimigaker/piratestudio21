@@ -11,8 +11,11 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pirate Studio 21 - Streaming Film & Series</title>
         <meta name="description" content="Nonton streaming film dan series subtitle Indonesia gratis." />
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" 
-  rel="stylesheet" />        
+        <meta name="keywords" content="ps21, nonton film, streaming film, anime streaming, movie download, bioskop online" />
+        <meta name="author" content="Pirate Studio 21" />
+        <meta name="robots" content="index, follow" />
+        
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 
         {/* Favicon */}
         <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
@@ -32,6 +35,30 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
+
+        {/* JSON-LD Schema untuk Website */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Pirate Studio 21",
+              "alternateName": "PS21",
+              "url": "https://piratestudio.vercel.app/",
+              "description": "Nonton streaming film dan series subtitle Indonesia gratis.",
+              "inLanguage": "id",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://piratestudio.vercel.app/?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
       </head>
       <body>
         <Navbar />
