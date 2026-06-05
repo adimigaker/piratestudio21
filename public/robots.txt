@@ -9,4 +9,4 @@ Disallow: /dashboard/
 Disallow: /editor.html
 Disallow: /galeri.html
 
-Sitemap: https://piratestudio21.vercel.app/sitemap.xml
+Sitemap: https://piratestudio.vercel.app/sitemap.xml
