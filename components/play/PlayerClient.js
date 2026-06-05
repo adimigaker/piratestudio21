@@ -109,6 +109,17 @@ const Icons = {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
     </svg>
+  ),
+  star: () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  ),
+  clock: () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
   )
 }
 
@@ -272,7 +283,7 @@ export default function PlayerClient({ film }) {
         </button>
       </div>
 
-      {/* Server Selector - hanya tampil jika bukan mode trailer */}
+      {/* Server Selector */}
       {!isTrailer && hasMirror && (
         <div className="server-bar" style={{ marginTop: '4px' }}>
           <span className="server-label"><Icons.server /></span>
@@ -291,7 +302,7 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Episode List - hanya tampil jika bukan mode trailer */}
+      {/* Episode List */}
       {isSeries && !isTrailer && episodes.length > 0 && (
         <div className="server-bar" style={{ justifyContent: 'flex-start', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
           {episodes.map((ep) => (
@@ -306,22 +317,78 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Info Film */}
+      {/* Info Film - Desain Lama dengan Poster */}
       <div className="container" style={{ maxWidth: '900px', marginTop: '24px' }}>
-        <h1 className="info-title">
-          {film.title} ({film.year})
-          {isSeries && <span style={{ color: '#e50914', fontSize: '0.6em', marginLeft: '10px' }}>SERIES</span>}
-        </h1>
-
-        {/* Sinopsis dengan HTML rendering */}
+        <div className="info-grid">
+          {/* Poster */}
+          <img 
+            src={film.poster || '/placeholder.jpg'} 
+            alt={film.title} 
+            className="info-poster" 
+            onError={(e) => { e.target.style.background = '#1a1a24'; e.target.style.objectFit = 'contain'; }}
+          />
+          
+          {/* Info Details */}
+          <div className="info-details">
+            <h1 className="info-title">
+              {film.title} ({film.year})
+              {isSeries && <span style={{ color: '#e50914', fontSize: '0.6em', marginLeft: '10px' }}>SERIES</span>}
+            </h1>
+            
+            <div className="info-meta">
+              <span className="info-year">{film.year || '—'}</span>
+              {film.rating && (
+                <span className="info-rating">
+                  <Icons.star /> {film.rating}
+                </span>
+              )}
+              {film.duration && (
+                <span className="info-duration">
+                  <Icons.clock /> {film.duration}
+                </span>
+              )}
+            </div>
+            
+            {/* Genre Tags */}
+            {film.genre && (
+              <div className="info-genres">
+                {film.genre.split(',').map((g, i) => (
+                  <span key={i} className="info-genre-tag">{g.trim()}</span>
+                ))}
+              </div>
+            )}
+            
+            {/* Director & Cast & Type */}
+            <div className="info-more">
+              {film.director && (
+                <div className="info-more-item">
+                  <span className="info-more-label">Sutradara</span>
+                  <span className="info-more-value">{film.director}</span>
+                </div>
+              )}
+              {film.cast && (
+                <div className="info-more-item">
+                  <span className="info-more-label">Pemeran</span>
+                  <span className="info-more-value">{film.cast.split(',').slice(0, 3).join(', ')}</span>
+                </div>
+              )}
+              <div className="info-more-item">
+                <span className="info-more-label">Tipe</span>
+                <span className="info-more-value">{isSeries ? 'SERIES' : 'MOVIE'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Sinopsis */}
         {film.synopsis && (
-          <div className="info-synopsis" style={{ marginTop: '12px' }}>
+          <div className="info-synopsis">
             <div className="info-synopsis-label">Sinopsis</div>
             <p dangerouslySetInnerHTML={{ __html: film.synopsis }} />
           </div>
         )}
-
-        {/* Action Buttons - hanya tampil jika bukan mode trailer */}
+        
+        {/* Action Buttons */}
         {!isTrailer && (
           <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
             {hasValidUrl(getCurrentDownloadUrl()) && (
@@ -344,7 +411,7 @@ export default function PlayerClient({ film }) {
             )}
           </div>
         )}
-
+        
         {/* Comments */}
         <div className="comments-section">
           <div className="comments-title">
