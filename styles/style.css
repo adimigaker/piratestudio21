@@ -1,6 +1,6 @@
 /* =============================================
    PIRATE STUDIO 21 - COMPLETE STYLESHEET
-   Minimal, Dark, Cinematic, Glassmorphism
+   Based on original design
    ============================================= */
 
 /* ─── CSS Variables ─────────────────────────── */
@@ -127,7 +127,7 @@ ul, ol {
 }
 
 /* =============================================
-   NAVBAR
+   NAVBAR (Original Design)
    ============================================= */
 .navbar {
     position: fixed;
@@ -144,7 +144,6 @@ ul, ol {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    overflow: visible;
 }
 
 @media (min-width: 768px) {
@@ -158,7 +157,7 @@ ul, ol {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Logo */
+/* Logo - Original */
 .logo {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.5rem;
@@ -170,7 +169,6 @@ ul, ol {
     text-decoration: none;
     transition: opacity 0.2s;
     flex-shrink: 0;
-    font-weight: bold;
 }
 
 .logo:hover {
@@ -180,29 +178,25 @@ ul, ol {
 .logo .brand-pirate {
     color: var(--accent);
     text-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
-    font-weight: bold;
 }
 
 .logo .brand-studio {
     color: var(--text);
-    font-weight: bold;
 }
 
 .logo .brand-num {
     color: var(--text);
     opacity: 0.5;
     font-size: 1.2rem;
-    font-weight: bold;
 }
 
 /* =============================================
-   SEARCH BAR & DROPDOWN
+   SEARCH BAR & DROPDOWN (Original)
    ============================================= */
 .search-wrap {
     position: relative;
     display: flex;
     align-items: center;
-    overflow: visible;
 }
 
 .search-icon {
@@ -211,7 +205,6 @@ ul, ol {
     color: var(--text3);
     pointer-events: none;
     transition: color var(--transition);
-    z-index: 1;
 }
 
 .search-input {
@@ -222,8 +215,7 @@ ul, ol {
     color: var(--text);
     font-size: 0.85rem;
     width: 200px;
-    transition: width 0.3s ease, background 0.2s, border-color 0.2s;
-    outline: none;
+    transition: all var(--transition);
 }
 
 .search-input:focus {
@@ -241,14 +233,13 @@ ul, ol {
     color: var(--text3);
 }
 
-/* Search Dropdown - prevent off-screen */
+/* Search Dropdown - Original dengan right: 0 agar tidak keluar */
 .search-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
     left: auto;
     min-width: 320px;
-    max-width: 90vw;
     background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -300,7 +291,7 @@ ul, ol {
 
 .search-item-title {
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
@@ -356,7 +347,6 @@ ul, ol {
     opacity: 0.3;
 }
 
-/* Responsive search dropdown */
 @media (max-width: 640px) {
     .search-input {
         width: 140px;
@@ -370,17 +360,18 @@ ul, ol {
         left: 8px;
         right: 8px;
         min-width: auto;
-        max-width: none;
         max-height: 55vh;
     }
 }
 
-/* ─── MAIN CONTENT (offset navbar fixed 60px) ── */
+/* ─── MAIN CONTENT ── */
 main {
     padding-top: 60px;
 }
 
-/* ─── HERO SECTION ──────────────────────────── */
+/* =============================================
+   HERO SECTION (Original - Bolder)
+   ============================================= */
 .hero {
     position: relative;
     height: 80vh;
@@ -431,7 +422,6 @@ main {
     width: 100%;
 }
 
-/* Hero Badge */
 .hero-badge {
     display: inline-flex;
     align-items: center;
@@ -458,18 +448,17 @@ main {
     animation: pulse 2s infinite;
 }
 
-/* Hero Title */
+/* Hero Title - Bolder like original */
 .hero-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 2.8rem;
     line-height: 0.9;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     color: #fff;
     text-shadow: 0 4px 40px rgba(0,0,0,0.8);
     margin-bottom: 14px;
     opacity: 0;
     animation: fadeInUp 0.6s ease 0.2s forwards;
-    font-weight: 700;
 }
 
 @media (min-width: 768px) {
@@ -484,7 +473,6 @@ main {
     }
 }
 
-/* Hero Meta */
 .hero-meta {
     display: flex;
     align-items: center;
@@ -498,7 +486,7 @@ main {
 .hero-year {
     color: var(--text2);
     font-size: 0.88rem;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .hero-rating {
@@ -519,7 +507,6 @@ main {
     padding: 5px 14px;
     border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 600;
     color: var(--text2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -531,14 +518,13 @@ main {
     color: var(--text);
 }
 
-/* Hero Description */
 .hero-desc {
     color: rgba(232, 232, 240, 0.7);
     font-size: 0.9rem;
     line-height: 1.7;
     max-width: 480px;
     margin-bottom: 20px;
-    font-weight: 400;
+    font-weight: 300;
     opacity: 0;
     animation: fadeInUp 0.6s ease 0.4s forwards;
     display: -webkit-box;
@@ -554,7 +540,6 @@ main {
     }
 }
 
-/* Hero Actions */
 .hero-actions {
     display: flex;
     gap: 10px;
@@ -658,7 +643,6 @@ main {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 600;
 }
 
 @media (min-width: 768px) {
@@ -772,7 +756,6 @@ main {
     transform: scale(1.1);
 }
 
-/* Card Badges */
 .card-badge {
     position: absolute;
     top: 8px;
@@ -825,7 +808,6 @@ main {
     z-index: 5;
 }
 
-/* Card Overlay */
 .card-overlay {
     position: absolute;
     inset: 0;
@@ -869,7 +851,6 @@ main {
     color: var(--text3);
 }
 
-/* Card Hover */
 .card-hover {
     position: absolute;
     inset: 0;
@@ -988,7 +969,7 @@ main {
 .genre-label {
     color: var(--text2);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -1002,13 +983,12 @@ main {
     padding: 6px 16px;
     border-radius: 25px;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all var(--transition);
     white-space: nowrap;
     text-decoration: none;
     display: inline-block;
-    letter-spacing: 0.5px;
 }
 
 .genre-tag:hover,
@@ -1092,7 +1072,7 @@ main {
 }
 
 /* =============================================
-   LOADING, ERROR, EMPTY STATES
+   LOADING, ERROR, EMPTY
    ============================================= */
 .loading-container {
     display: flex;
@@ -1196,7 +1176,7 @@ main {
 }
 
 /* =============================================
-   SKELETON LOADING
+   SKELETON
    ============================================= */
 .skeleton {
     background: linear-gradient(90deg, var(--surface) 25%, var(--bg3) 50%, var(--surface) 75%);
@@ -1210,36 +1190,28 @@ main {
     border-radius: var(--radius-lg);
 }
 
-/* =============================================
-   RESPONSIVE
-   ============================================= */
 @media (max-width: 480px) {
     .hero {
         height: 60vh;
         min-height: 350px;
     }
-    
     .hero-title {
         font-size: 2rem;
     }
-    
     .hero-desc {
         font-size: 0.8rem;
         -webkit-line-clamp: 2;
     }
-    
     .btn {
         padding: 10px 18px;
         font-size: 0.82rem;
     }
-    
     .film-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
 }
 
-/* ─── SKELETON CARDS ─────────────────────────── */
 .skeleton-card {
     border-radius: var(--radius, 10px);
     overflow: hidden;
@@ -1263,7 +1235,6 @@ main {
     width: 50%;
 }
 
-/* ─── PULL TO REFRESH ────────────────────────── */
 #ptr-indicator {
     position: fixed;
     top: 0;
@@ -1284,7 +1255,6 @@ main {
 }
 #ptr-indicator svg { opacity: 0.7; }
 
-/* ─── GOOGLE DRIVE PLAYER ────────────────────── */
 .drive-frame {
     position: relative;
     width: 100%;
