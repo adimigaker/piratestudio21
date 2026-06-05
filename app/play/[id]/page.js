@@ -1,15 +1,24 @@
 import { supabase } from '@/lib/supabaseClient'
 import { notFound } from 'next/navigation'
+import PlayerClient from './PlayerClient'
 
+// =============================================
+// SERVER COMPONENT: Ambil data dari Supabase
+// =============================================
 async function getFilm(id) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('PirateStudio21_DB')
     .select('*')
     .eq('id', id)
     .single()
+    
+  if (error || !data) return null
   return data
 }
 
+// =============================================
+// MAIN PAGE
+// =============================================
 export default async function PlayPage({ params }) {
   const { id } = await params
   const film = await getFilm(id)
@@ -18,21 +27,6 @@ export default async function PlayPage({ params }) {
     notFound()
   }
 
-  return (
-    <div className="container" style={{ paddingTop: '80px' }}>
-      <h1>{film.title}</h1>
-      <p>ID: {film.id}</p>
-      <p>Type: {film.type}</p>
-      {film.embed_url && (
-        <iframe 
-          src={film.embed_url} 
-          width="100%" 
-          height="400" 
-          style={{ border: 'none' }}
-          allowFullScreen
-        />
-      )}
-      <a href="/">← Kembali</a>
-    </div>
-  )
+  // Kirim data film ke Client Component
+  return <PlayerClient film={film} />
 }
