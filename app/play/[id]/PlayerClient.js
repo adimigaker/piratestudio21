@@ -23,12 +23,10 @@ function mergeEpisodes(film) {
   var mirrors   = parseCol(film.mirror_url)
   var subtitles = parseCol(film.subtitle_url)
 
-  // Kalau embed_url sudah format lama (punya semua field), pakai langsung
   if (embeds.length > 0 && embeds[0].download !== undefined) {
     return embeds
   }
 
-  // Format baru — merge berdasarkan ep number
   var map = {}
 
   embeds.forEach(function(e) {
@@ -52,7 +50,6 @@ function mergeEpisodes(film) {
     map[n].subtitle = e.subtitle || ''
   })
 
-  // Sort by ep number
   return Object.values(map).sort(function(a, b) { return a.ep - b.ep })
 }
 
@@ -61,6 +58,7 @@ export default function PlayerClient({ film }) {
   const [episodes, setEpisodes] = useState([])
   const [currentEpisode, setCurrentEpisode] = useState(null)
   const [isTrailer, setIsTrailer] = useState(false)
+  const [server, setServer] = useState('embed') // 'embed' = Server 1, 'mirror' = Server 2
 
   // Inisialisasi data series
   useEffect(() => {
@@ -75,34 +73,37 @@ export default function PlayerClient({ film }) {
       }
       setCurrentEpisode(targetEp || merged[0] || null)
     }
-    
-    // Set trailer mode jika ada trailer
-    if (film.trailer) {
-      setIsTrailer(false)
-    }
   }, [film, searchParams])
 
   // Fungsi ganti episode
   const changeEpisode = (ep) => {
     setIsTrailer(false)
     setCurrentEpisode(ep)
+    setServer('embed') // Reset ke Server 1 saat ganti episode
     const url = new URL(window.location.href)
     url.searchParams.set('ep', ep.ep)
     window.history.pushState({}, '', url)
   }
 
-  // Tentukan URL yang diputar
+  // Tentukan URL yang diputar berdasarkan server yang dipilih
   let activeUrl = ''
   if (isTrailer && film.trailer) {
     activeUrl = film.trailer
   } else if (film.type === 'series' && currentEpisode) {
-    activeUrl = currentEpisode.embed
+    activeUrl = server === 'embed' ? currentEpisode.embed : currentEpisode.mirror
   } else {
-    activeUrl = typeof film.embed_url === 'string' ? film.embed_url : ''
+    activeUrl = server === 'embed' 
+      ? (typeof film.embed_url === 'string' ? film.embed_url : '')
+      : film.mirror_url
   }
 
   const hasTrailer = !!film.trailer
   const isSeries = film.type === 'series'
+  
+  // Cek apakah mirror tersedia (untuk menampilkan Server 2)
+  const hasMirror = isSeries 
+    ? (currentEpisode && currentEpisode.mirror)
+    : !!film.mirror_url
 
   return (
     <div className="container" style={{ paddingTop: '80px' }}>
@@ -142,6 +143,25 @@ export default function PlayerClient({ film }) {
             onClick={() => setIsTrailer(false)}
           >
             {isSeries ? '📺 Full Series' : '🎥 Full Film'}
+          </button>
+        </div>
+      )}
+
+      {/* SERVER SELECTOR (Server 1 / Server 2) - hanya tampil jika ada mirror */}
+      {!isTrailer && hasMirror && (
+        <div className="server-bar" style={{ marginTop: '8px' }}>
+          <span className="server-label">🔧 Server:</span>
+          <button 
+            className={`server-btn ${server === 'embed' ? 'active' : ''}`}
+            onClick={() => setServer('embed')}
+          >
+            Server 1
+          </button>
+          <button 
+            className={`server-btn ${server === 'mirror' ? 'active' : ''}`}
+            onClick={() => setServer('mirror')}
+          >
+            Server 2
           </button>
         </div>
       )}
