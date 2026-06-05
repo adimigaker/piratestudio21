@@ -11,7 +11,9 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pirate Studio 21 - Streaming Film & Series</title>
         <meta name="description" content="Nonton streaming film dan series subtitle Indonesia gratis." />
-        
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" 
+  rel="stylesheet"/>        
+
         {/* Favicon */}
         <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
         <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
