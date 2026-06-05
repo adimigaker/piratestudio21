@@ -53,6 +53,65 @@ function mergeEpisodes(film) {
   return Object.values(map).sort(function(a, b) { return a.ep - b.ep })
 }
 
+// SVG Icons
+const Icons = {
+  home: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+    </svg>
+  ),
+  play: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  ),
+  film: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+      <line x1="7" y1="2" x2="7" y2="22"/>
+      <line x1="17" y1="2" x2="17" y2="22"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="2" y1="7" x2="7" y2="7"/>
+      <line x1="2" y1="17" x2="7" y2="17"/>
+      <line x1="17" y1="7" x2="22" y2="7"/>
+      <line x1="17" y1="17" x2="22" y2="17"/>
+    </svg>
+  ),
+  tv: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+      <polyline points="17 2 12 7 7 2"/>
+    </svg>
+  ),
+  server: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+      <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+      <line x1="6" y1="6" x2="6" y2="6"/>
+      <line x1="6" y1="18" x2="6" y2="18"/>
+    </svg>
+  ),
+  download: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  ),
+  subtitle: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
+      <line x1="9" y1="12" x2="15" y2="12"/>
+      <line x1="9" y1="16" x2="13" y2="16"/>
+    </svg>
+  ),
+  comment: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  )
+}
+
 // Load Disqus
 function loadDisqus(filmId, filmTitle) {
   if (window.DISQUS) {
@@ -97,7 +156,6 @@ export default function PlayerClient({ film }) {
       setCurrentEpisode(targetEp || merged[0] || null)
     }
     
-    // Load Disqus
     loadDisqus(film.id, film.title)
   }, [film, searchParams])
 
@@ -129,13 +187,11 @@ export default function PlayerClient({ film }) {
 
   return (
     <div className="player-container">
-      {/* Back button - pakai SVG rumah */}
+      {/* Back button */}
       <div className="container" style={{ maxWidth: '900px', paddingTop: '16px' }}>
         <a href="/" className="back-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-          </svg>
-          Kembali
+          <Icons.home />
+          <span>Kembali</span>
         </a>
       </div>
 
@@ -156,29 +212,29 @@ export default function PlayerClient({ film }) {
         </div>
       </div>
 
-      {/* Server Bar (Trailer & Full) - SELALU TAMPIL, minimal ada tombol Full Film */}
+      {/* Tab Bar */}
       <div className="server-bar" style={{ marginTop: '8px' }}>
-        <span className="server-label">📺</span>
+        <span className="server-label"><Icons.tv /></span>
         {hasTrailer && (
           <button 
             className={`server-btn ${isTrailer ? 'active' : ''}`}
             onClick={() => setIsTrailer(true)}
           >
-            🎬 Trailer
+            <Icons.play /> Trailer
           </button>
         )}
         <button 
           className={`server-btn ${!isTrailer ? 'active' : ''}`}
           onClick={() => setIsTrailer(false)}
         >
-          {isSeries ? '📺 Full Series' : '🎥 Full Film'}
+          <Icons.film /> {isSeries ? 'Full Series' : 'Full Film'}
         </button>
       </div>
 
-      {/* Server Selector (Server 1 / 2) */}
+      {/* Server Selector */}
       {!isTrailer && hasMirror && (
         <div className="server-bar" style={{ marginTop: '4px' }}>
-          <span className="server-label">🔧 Server:</span>
+          <span className="server-label"><Icons.server /></span>
           <button 
             className={`server-btn ${server === 'embed' ? 'active' : ''}`}
             onClick={() => setServer('embed')}
@@ -194,7 +250,7 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Daftar Episode */}
+      {/* Episode List */}
       {isSeries && !isTrailer && episodes.length > 0 && (
         <div className="server-bar" style={{ justifyContent: 'flex-start', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
           {episodes.map((ep) => (
@@ -209,7 +265,7 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Info Film - diberi jarak dari player */}
+      {/* Info Film */}
       <div className="container" style={{ maxWidth: '900px', marginTop: '24px' }}>
         <h1 className="info-title">
           {film.title} ({film.year})
@@ -223,34 +279,37 @@ export default function PlayerClient({ film }) {
           </div>
         )}
 
+        {/* Action Buttons */}
         <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
-  {film.download_url && (
-    <a 
-      href={film.download_url} 
-      download
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="btn-action btn-action-download"
-    >
-      ⬇️ Download
-    </a>
-  )}
-  {film.subtitle_url && (
-    <a 
-      href={film.subtitle_url} 
-      download
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="btn-action"
-    >
-      📝 Subtitle
-    </a>
-  )}
-</div>
+          {film.download_url && (
+            <a 
+              href={film.download_url} 
+              download
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-action btn-action-download"
+            >
+              <Icons.download /> Download
+            </a>
+          )}
+          {film.subtitle_url && (
+            <a 
+              href={film.subtitle_url} 
+              download
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-action"
+            >
+              <Icons.subtitle /> Subtitle
+            </a>
+          )}
+        </div>
 
-        {/* Disqus Comments */}
+        {/* Comments */}
         <div className="comments-section">
-          <div className="comments-title">💬 Komentar</div>
+          <div className="comments-title">
+            <Icons.comment /> Komentar
+          </div>
           <div id="disqus_thread"></div>
         </div>
       </div>
