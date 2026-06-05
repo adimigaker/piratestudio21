@@ -73,18 +73,19 @@ function FilmCard({ film }) {
   const type = film.type === 'series' ? 'SERIES' : 'MOVIE'
 
   return (
-    <a href={`/play/${film.id}`} className="film-card">
+    <a 
+      href={`/play/${film.id}`} 
+      className="film-card"
+      tabIndex={0}
+    >
       <img src={film.poster || '/placeholder.jpg'} alt={film.title} loading="lazy" />
       
-      {/* Genre Badge - kiri atas */}
       {genreBadge && (
         <div className="card-badge">{genreBadge}</div>
       )}
       
-      {/* Type Badge - kanan atas */}
       <div className="card-type">{type}</div>
       
-      {/* Rating Badge - kanan bawah dengan SVG star */}
       {film.rating && (
         <div className="card-rating">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
@@ -94,16 +95,13 @@ function FilmCard({ film }) {
         </div>
       )}
       
-      {/* Overlay */}
       <div className="card-overlay"></div>
       
-      {/* Info Bottom - kiri bawah (title dan year) */}
       <div className="card-info-bottom">
         <div className="card-title">{film.title}</div>
         <div className="card-year">{film.year || ''}</div>
       </div>
       
-      {/* Hover effect */}
       <div className="card-hover">
         <div className="card-play-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -167,10 +165,10 @@ function HeroSection({ film }) {
           {film.synopsis ? film.synopsis.substring(0, 180) + '...' : ''}
         </p>
         <div className="hero-actions">
-          <a href={`/play/${film.id}`} className="btn btn-primary">
+          <a href={`/play/${film.id}`} className="btn btn-primary" tabIndex={0}>
             <Icons.play /> Tonton Sekarang
           </a>
-          <a href={`/play/${film.id}`} className="btn btn-secondary">
+          <a href={`/play/${film.id}`} className="btn btn-secondary" tabIndex={0}>
             <Icons.info /> Info Lebih
           </a>
         </div>
@@ -284,7 +282,6 @@ export default function HomeClient({
       
       <div className="container">
         
-        {/* Popular Section */}
         {popularFilms && popularFilms.length > 0 && (
           <section className="section">
             <SectionHeader title="Terpopuler" icon="fire" count={popularFilms.length} />
@@ -296,12 +293,12 @@ export default function HomeClient({
           </section>
         )}
         
-        {/* Genre Tags */}
         <div className="genre-tags">
           <span className="genre-label"><Icons.genre /> Genre:</span>
           <button 
             className={`genre-tag ${activeGenre === '' ? 'active' : ''}`}
             onClick={() => filterByGenre('')}
+            tabIndex={0}
           >
             Semua
           </button>
@@ -310,13 +307,13 @@ export default function HomeClient({
               key={g}
               className={`genre-tag ${activeGenre === g ? 'active' : ''}`}
               onClick={() => filterByGenre(g)}
+              tabIndex={0}
             >
               {g}
             </button>
           ))}
         </div>
         
-        {/* Film Grid */}
         <section className="section">
           <SectionHeader 
             title={activeGenre ? `Genre: ${activeGenre}` : "Terbaru"} 
