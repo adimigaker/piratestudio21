@@ -13,23 +13,21 @@ export default async function Home() {
   const films = await getFilms()
   
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+    <div className="container" style={{ paddingTop: '80px' }}>
       <h1 style={{ color: '#e50914' }}>Pirate Studio 21</h1>
       <p>Streaming film dan series subtitle Indonesia</p>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginTop: '30px' }}>
+      <div className="film-grid">
         {films.map((film) => (
-          <a key={film.id} href={`/play/${film.id}`} style={{ textDecoration: 'none', color: 'white' }}>
-            <div style={{ background: '#1a1a2e', borderRadius: '10px', overflow: 'hidden' }}>
-              <img 
-                src={film.poster || '/placeholder.jpg'} 
-                alt={film.title}
-                style={{ width: '100%', height: '280px', objectFit: 'cover' }}
-              />
-              <div style={{ padding: '10px' }}>
-                <h3 style={{ fontSize: '14px', margin: '0' }}>{film.title}</h3>
-                <p style={{ fontSize: '12px', color: '#888' }}>{film.year} • {film.rating}⭐</p>
-              </div>
+          <a key={film.id} href={`/play/${film.id}`} className="film-card">
+            <img 
+              src={film.poster || '/placeholder.jpg'} 
+              alt={film.title}
+            />
+            <div className="card-overlay"></div>
+            <div className="card-info-bottom">
+              <div className="card-title">{film.title}</div>
+              <div className="card-year">{film.year} • {film.rating}⭐</div>
             </div>
           </a>
         ))}
