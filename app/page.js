@@ -1,11 +1,20 @@
 import { supabase } from '@/lib/supabaseClient'
 import HomeClient from '@/components/home/HomeClient'
 
-async function getFilms() {
+async function getFilmsCount() {
+  const { count, error } = await supabase
+    .from('PirateStudio21_DB')
+    .select('*', { count: 'exact', head: true })
+  
+  return count || 0
+}
+
+async function getFilms(limit = 10, offset = 0) {
   const { data } = await supabase
     .from('PirateStudio21_DB')
     .select('*')
     .order('year', { ascending: false })
+    .range(offset, offset + limit - 1)
   return data || []
 }
 
@@ -22,7 +31,7 @@ async function getPopular() {
     .from('PirateStudio21_DB')
     .select('*')
     .eq('popular', true)
-    .limit(8)
+    .limit(10)
   return data || []
 }
 
@@ -48,8 +57,9 @@ async function getGenres() {
 }
 
 export default async function Home() {
-  const [films, featured, popular, genres] = await Promise.all([
-    getFilms(),
+  const [initialFilms, totalFilms, featured, popular, genres] = await Promise.all([
+    getFilms(10, 0),  // 10 film pertama untuk initial load
+    getFilmsCount(),
     getFeatured(),
     getPopular(),
     getGenres()
@@ -61,7 +71,8 @@ export default async function Home() {
 
   return (
     <HomeClient 
-      initialFilms={films} 
+      initialFilms={initialFilms}
+      totalFilms={totalFilms}
       initialGenres={genres}
       featuredFilm={randomFeatured}
       popularFilms={popular}
