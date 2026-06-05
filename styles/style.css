@@ -1,6 +1,6 @@
 /* =============================================
    PIRATE STUDIO 21 - COMPLETE STYLESHEET
-   Based on original design
+   Original Design 25401 - Bold & Tight Spacing
    ============================================= */
 
 /* ─── CSS Variables ─────────────────────────── */
@@ -127,7 +127,7 @@ ul, ol {
 }
 
 /* =============================================
-   NAVBAR (Original Design)
+   NAVBAR - Original Design
    ============================================= */
 .navbar {
     position: fixed;
@@ -144,6 +144,7 @@ ul, ol {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
+    overflow: visible;
 }
 
 @media (min-width: 768px) {
@@ -157,18 +158,19 @@ ul, ol {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Logo - Original */
+/* Logo */
 .logo {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.5rem;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     user-select: none;
     text-decoration: none;
     transition: opacity 0.2s;
     flex-shrink: 0;
+    font-weight: 700;
 }
 
 .logo:hover {
@@ -178,25 +180,29 @@ ul, ol {
 .logo .brand-pirate {
     color: var(--accent);
     text-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+    font-weight: 700;
 }
 
 .logo .brand-studio {
     color: var(--text);
+    font-weight: 700;
 }
 
 .logo .brand-num {
     color: var(--text);
     opacity: 0.5;
     font-size: 1.2rem;
+    font-weight: 700;
 }
 
 /* =============================================
-   SEARCH BAR & DROPDOWN (Original)
+   SEARCH BAR & DROPDOWN
    ============================================= */
 .search-wrap {
     position: relative;
     display: flex;
     align-items: center;
+    overflow: visible;
 }
 
 .search-icon {
@@ -205,6 +211,7 @@ ul, ol {
     color: var(--text3);
     pointer-events: none;
     transition: color var(--transition);
+    z-index: 1;
 }
 
 .search-input {
@@ -216,6 +223,7 @@ ul, ol {
     font-size: 0.85rem;
     width: 200px;
     transition: all var(--transition);
+    outline: none;
 }
 
 .search-input:focus {
@@ -233,13 +241,14 @@ ul, ol {
     color: var(--text3);
 }
 
-/* Search Dropdown - Original dengan right: 0 agar tidak keluar */
+/* Search Dropdown - prevent off-screen */
 .search-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
     left: auto;
     min-width: 320px;
+    max-width: 90vw;
     background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -291,7 +300,7 @@ ul, ol {
 
 .search-item-title {
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
@@ -347,6 +356,7 @@ ul, ol {
     opacity: 0.3;
 }
 
+/* Responsive */
 @media (max-width: 640px) {
     .search-input {
         width: 140px;
@@ -360,6 +370,7 @@ ul, ol {
         left: 8px;
         right: 8px;
         min-width: auto;
+        max-width: none;
         max-height: 55vh;
     }
 }
@@ -370,7 +381,7 @@ main {
 }
 
 /* =============================================
-   HERO SECTION (Original - Bolder)
+   HERO SECTION - Bold & Tight
    ============================================= */
 .hero {
     position: relative;
@@ -448,17 +459,18 @@ main {
     animation: pulse 2s infinite;
 }
 
-/* Hero Title - Bolder like original */
+/* Hero Title - Bold & Tight */
 .hero-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 2.8rem;
     line-height: 0.9;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: #fff;
     text-shadow: 0 4px 40px rgba(0,0,0,0.8);
     margin-bottom: 14px;
     opacity: 0;
     animation: fadeInUp 0.6s ease 0.2s forwards;
+    font-weight: 700;
 }
 
 @media (min-width: 768px) {
@@ -486,7 +498,7 @@ main {
 .hero-year {
     color: var(--text2);
     font-size: 0.88rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .hero-rating {
@@ -507,6 +519,7 @@ main {
     padding: 5px 14px;
     border-radius: 20px;
     font-size: 0.75rem;
+    font-weight: 600;
     color: var(--text2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -524,7 +537,7 @@ main {
     line-height: 1.7;
     max-width: 480px;
     margin-bottom: 20px;
-    font-weight: 300;
+    font-weight: 400;
     opacity: 0;
     animation: fadeInUp 0.6s ease 0.4s forwards;
     display: -webkit-box;
@@ -643,6 +656,7 @@ main {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-weight: 700;
 }
 
 @media (min-width: 768px) {
@@ -956,7 +970,7 @@ main {
 }
 
 /* =============================================
-   GENRE TAGS
+   GENRE TAGS - Bold
    ============================================= */
 .genre-tags {
     display: flex;
@@ -969,7 +983,7 @@ main {
 .genre-label {
     color: var(--text2);
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -983,7 +997,7 @@ main {
     padding: 6px 16px;
     border-radius: 25px;
     font-size: 0.8rem;
-    font-weight: 500;
+    font-weight: 700;
     cursor: pointer;
     transition: all var(--transition);
     white-space: nowrap;
@@ -1048,6 +1062,7 @@ main {
     color: var(--accent);
     opacity: 0.5;
     margin-bottom: 8px;
+    font-weight: 700;
 }
 
 .footer-desc {
@@ -1062,6 +1077,7 @@ main {
     letter-spacing: 1px;
     color: var(--text2);
     margin-bottom: 12px;
+    font-weight: 700;
 }
 
 .footer-bottom {
