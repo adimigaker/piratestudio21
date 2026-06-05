@@ -19,7 +19,12 @@ async function getGenres() {
   const genreSet = new Set()
   for (const film of data) {
     if (film.genre) {
-      film.genre.split(',').forEach(g => genreSet.add(g.trim()))
+      film.genre.split(',').forEach(g => {
+        const trimmed = g.trim()
+        if (trimmed !== '') {  // ← HANYA TAMBAHKAN INI
+          genreSet.add(trimmed)
+        }
+      })
     }
   }
   return Array.from(genreSet).sort()
