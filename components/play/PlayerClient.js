@@ -147,7 +147,7 @@ function loadDisqus(filmId, filmTitle) {
   }
 }
 
-// Fungsi download subtitle via API (force download)
+// Fungsi download subtitle via API
 const downloadSubtitle = (url) => {
   if (!url) return
   const encodedUrl = encodeURIComponent(url)
@@ -238,7 +238,7 @@ export default function PlayerClient({ film }) {
     <div className="player-container">
       {/* Back button */}
       <div className="container" style={{ maxWidth: '900px', paddingTop: '16px' }}>
-        <a href="/" className="back-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        <a href="/" className="back-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }} tabIndex={0}>
           <Icons.home />
           <span>Kembali</span>
         </a>
@@ -268,6 +268,7 @@ export default function PlayerClient({ film }) {
           <button 
             className={`server-btn ${isTrailer ? 'active' : ''}`}
             onClick={() => setIsTrailer(true)}
+            tabIndex={0}
           >
             <Icons.play /> Trailer
           </button>
@@ -275,6 +276,7 @@ export default function PlayerClient({ film }) {
         <button 
           className={`server-btn ${!isTrailer ? 'active' : ''}`}
           onClick={() => setIsTrailer(false)}
+          tabIndex={0}
         >
           <Icons.film /> {isSeries ? 'Full Series' : 'Full Film'}
         </button>
@@ -287,12 +289,14 @@ export default function PlayerClient({ film }) {
           <button 
             className={`server-btn ${server === 'embed' ? 'active' : ''}`}
             onClick={() => setServer('embed')}
+            tabIndex={0}
           >
             Server 1
           </button>
           <button 
             className={`server-btn ${server === 'mirror' ? 'active' : ''}`}
             onClick={() => setServer('mirror')}
+            tabIndex={0}
           >
             Server 2
           </button>
@@ -307,6 +311,7 @@ export default function PlayerClient({ film }) {
               key={ep.ep}
               className={`episode-btn ${currentEpisode?.ep === ep.ep ? 'active' : ''}`}
               onClick={() => changeEpisode(ep)}
+              tabIndex={0}
             >
               Ep {ep.ep}
             </button>
@@ -349,7 +354,6 @@ export default function PlayerClient({ film }) {
               </div>
             )}
             
-            {/* Hanya tampil jika ada director atau cast */}
             {(film.director || film.cast) && (
               <div className="info-more">
                 {film.director && (
@@ -384,6 +388,7 @@ export default function PlayerClient({ film }) {
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="btn-action btn-action-download"
+                tabIndex={0}
               >
                 <Icons.download /> Download
               </a>
@@ -392,6 +397,7 @@ export default function PlayerClient({ film }) {
               <button 
                 onClick={() => downloadSubtitle(getCurrentSubtitleUrl())}
                 className="btn-action"
+                tabIndex={0}
               >
                 <Icons.subtitle /> Subtitle
               </button>
