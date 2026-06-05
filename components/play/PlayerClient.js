@@ -136,6 +136,13 @@ function loadDisqus(filmId, filmTitle) {
   }
 }
 
+// Fungsi download subtitle via API
+const downloadSubtitle = (url) => {
+  if (!url) return
+  const encodedUrl = encodeURIComponent(url)
+  window.open(`/api/download?url=${encodedUrl}`, '_blank')
+}
+
 export default function PlayerClient({ film }) {
   const searchParams = useSearchParams()
   const [episodes, setEpisodes] = useState([])
@@ -147,7 +154,7 @@ export default function PlayerClient({ film }) {
     if (film.type === 'series') {
       const merged = mergeEpisodes(film)
       setEpisodes(merged)
-      
+
       const epParam = searchParams.get('ep')
       let targetEp = null
       if (epParam && merged.length) {
@@ -155,7 +162,7 @@ export default function PlayerClient({ film }) {
       }
       setCurrentEpisode(targetEp || merged[0] || null)
     }
-    
+
     loadDisqus(film.id, film.title)
   }, [film, searchParams])
 
@@ -293,15 +300,12 @@ export default function PlayerClient({ film }) {
             </a>
           )}
           {film.subtitle_url && (
-            <a 
-              href={film.subtitle_url} 
-              download
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => downloadSubtitle(film.subtitle_url)}
               className="btn-action"
             >
               <Icons.subtitle /> Subtitle
-            </a>
+            </button>
           )}
         </div>
 
