@@ -84,10 +84,10 @@ function FilmCard({ film }) {
       {/* Type Badge - kanan atas */}
       <div className="card-type">{type}</div>
       
-      {/* Rating Badge - kanan bawah */}
+      {/* Rating Badge - kanan bawah dengan SVG star */}
       {film.rating && (
         <div className="card-rating">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
           {film.rating}
@@ -97,7 +97,7 @@ function FilmCard({ film }) {
       {/* Overlay */}
       <div className="card-overlay"></div>
       
-      {/* Info Bottom - tahun di kiri bawah */}
+      {/* Info Bottom - kiri bawah (title dan year) */}
       <div className="card-info-bottom">
         <div className="card-title">{film.title}</div>
         <div className="card-year">{film.year || ''}</div>
@@ -116,8 +116,8 @@ function FilmCard({ film }) {
           {film.rating && (
             <>
               <span>•</span>
-              <span style={{ color: '#f5c518' }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'inline', marginRight: '2px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                 </svg>
                 {film.rating}
@@ -149,7 +149,12 @@ function HeroSection({ film }) {
         <div className="hero-meta">
           <span className="hero-year">{film.year || '—'}</span>
           {film.rating && (
-            <span className="hero-rating">⭐ {film.rating}</span>
+            <span className="hero-rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              {film.rating}
+            </span>
           )}
           {genres.slice(0, 3).map((g, i) => (
             <span key={i} className="hero-genre">{g}</span>
