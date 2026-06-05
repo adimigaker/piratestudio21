@@ -42,12 +42,13 @@ export default function Navbar() {
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input 
-          type="text" 
-          className="search-input"
-          placeholder="Cari judul film..." 
-          value={searchQuery}
-          onChange={handleSearch}
-          onKeyDown={handleKeyDown}
+            type="text" 
+            className="search-input"
+            placeholder="Cari judul film..." 
+            value={searchQuery}
+            onChange={handleSearch}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
         />
         
         {showDropdown && searchResults.length > 0 && (
