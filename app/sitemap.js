@@ -1,13 +1,14 @@
 import { supabase } from '@/lib/supabaseClient'
 
 export default async function sitemap() {
-  // Ambil semua film dari database
+  const baseUrl = 'https://piratestudio21.vercel.app'
+  const today = new Date()
+  
   const { data: films } = await supabase
     .from('PirateStudio21_DB')
     .select('id, updated_at')
     .order('id')
   
-  // Ambil semua genre unik
   const { data: genreData } = await supabase
     .from('PirateStudio21_DB')
     .select('genre')
@@ -24,12 +25,6 @@ export default async function sitemap() {
     })
   }
   
-  const today = new Date()
-  
-  // Base URL
-  const baseUrl = 'https://piratestudio21.vercel.app'
-  
-  // URL statis
   const routes = [
     {
       url: baseUrl,
@@ -39,15 +34,13 @@ export default async function sitemap() {
     },
   ]
   
-  // URL film
-  const filmRoutes = films.map((film) => ({
+  const filmRoutes = (films || []).map((film) => ({
     url: `${baseUrl}/play/${film.id}`,
     lastModified: film.updated_at ? new Date(film.updated_at) : today,
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
   
-  // URL genre
   const genreRoutes = Array.from(genres).map((genre) => ({
     url: `${baseUrl}/?genre=${encodeURIComponent(genre)}`,
     lastModified: today,
