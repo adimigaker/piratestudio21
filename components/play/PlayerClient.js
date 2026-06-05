@@ -143,7 +143,7 @@ const downloadSubtitle = (url) => {
   window.open(`/api/download?url=${encodedUrl}`, '_blank')
 }
 
-// Helper function untuk cek apakah URL valid (bukan JSON array kosong)
+// Helper function untuk cek apakah URL valid
 const hasValidUrl = (url) => {
   if (!url) return false
   if (url === '[]') return false
@@ -184,22 +184,47 @@ export default function PlayerClient({ film }) {
     window.history.pushState({}, '', url)
   }
 
+  const isSeries = film.type === 'series'
+  const hasTrailer = !!film.trailer
+
+  // Helper functions untuk mendapatkan URL berdasarkan episode saat ini
+  const getCurrentMirrorUrl = () => {
+    if (isSeries && currentEpisode && currentEpisode.mirror) {
+      return currentEpisode.mirror
+    }
+    return film.mirror_url
+  }
+
+  const getCurrentDownloadUrl = () => {
+    if (isSeries && currentEpisode && currentEpisode.download) {
+      return currentEpisode.download
+    }
+    return film.download_url
+  }
+
+  const getCurrentSubtitleUrl = () => {
+    if (isSeries && currentEpisode && currentEpisode.subtitle) {
+      return currentEpisode.subtitle
+    }
+    return film.subtitle_url
+  }
+
+  // Tentukan URL player yang aktif
   let activeUrl = ''
   if (isTrailer && film.trailer) {
     activeUrl = film.trailer
-  } else if (film.type === 'series' && currentEpisode) {
-    activeUrl = server === 'embed' ? currentEpisode.embed : currentEpisode.mirror
+  } else if (isSeries && currentEpisode) {
+    activeUrl = server === 'embed' ? currentEpisode.embed : getCurrentMirrorUrl()
   } else {
     activeUrl = server === 'embed' 
       ? (typeof film.embed_url === 'string' ? film.embed_url : '')
-      : film.mirror_url
+      : getCurrentMirrorUrl()
   }
 
-  const hasTrailer = !!film.trailer
-  const isSeries = film.type === 'series'
+  // Cek apakah mirror tersedia untuk episode saat ini
   const hasMirror = isSeries 
-    ? (currentEpisode && currentEpisode.mirror)
-    : !!film.mirror_url
+    ? (currentEpisode && currentEpisode.mirror && currentEpisode.mirror !== '')
+    : hasValidUrl(film.mirror_url)
 
   return (
     <div className="player-container">
@@ -297,9 +322,9 @@ export default function PlayerClient({ film }) {
 
         {/* Action Buttons */}
         <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
-          {hasValidUrl(film.download_url) && (
+          {hasValidUrl(getCurrentDownloadUrl()) && (
             <a 
-              href={film.download_url} 
+              href={getCurrentDownloadUrl()} 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-action btn-action-download"
@@ -307,9 +332,9 @@ export default function PlayerClient({ film }) {
               <Icons.download /> Download
             </a>
           )}
-          {hasValidUrl(film.subtitle_url) && (
+          {hasValidUrl(getCurrentSubtitleUrl()) && (
             <button 
-              onClick={() => downloadSubtitle(film.subtitle_url)}
+              onClick={() => downloadSubtitle(getCurrentSubtitleUrl())}
               className="btn-action"
             >
               <Icons.subtitle /> Subtitle
