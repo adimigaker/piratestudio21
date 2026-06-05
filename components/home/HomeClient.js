@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 function FilmCard({ film }) {
   return (
@@ -73,26 +73,93 @@ function SectionHeader({ title, icon, count }) {
   )
 }
 
-export default function HomeClient({ initialFilms, initialGenres, featuredFilm, popularFilms }) {
+function LoadingSpinner() {
+  return (
+    <div style={{ textAlign: 'center', padding: '40px' }}>
+      <div className="spinner-lg"></div>
+      <p style={{ marginTop: '12px', color: '#888' }}>Memuat film...</p>
+    </div>
+  )
+}
+
+export default function HomeClient({ 
+  initialFilms, 
+  totalFilms, 
+  initialGenres, 
+  featuredFilm, 
+  popularFilms 
+}) {
   const [films, setFilms] = useState(initialFilms)
+  const [offset, setOffset] = useState(initialFilms.length)
+  const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(initialFilms.length < totalFilms)
   const [activeGenre, setActiveGenre] = useState('')
   const [genres] = useState(initialGenres)
+  
+  const observerRef = useRef()
+  const lastFilmRef = useCallback(node => {
+    if (loading) return
+    if (observerRef.current) observerRef.current.disconnect()
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !activeGenre) {
+        loadMoreFilms()
+      }
+    })
+    if (node) observerRef.current.observe(node)
+  }, [loading, hasMore, activeGenre])
+
+  const loadMoreFilms = async () => {
+    if (loading || !hasMore || activeGenre) return
+    
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/films?offset=${offset}&limit=10`)
+      const newFilms = await response.json()
+      
+      if (newFilms.length > 0) {
+        setFilms(prev => [...prev, ...newFilms])
+        setOffset(prev => prev + newFilms.length)
+        setHasMore(newFilms.length === 10)
+      } else {
+        setHasMore(false)
+      }
+    } catch (error) {
+      console.error('Error loading more films:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filterByGenre = (genre) => {
     setActiveGenre(genre)
     if (genre === '') {
+      // Reset ke initial films (yang pertama)
       setFilms(initialFilms)
+      setOffset(initialFilms.length)
+      setHasMore(initialFilms.length < totalFilms)
     } else {
-      const filtered = initialFilms.filter(film => 
-        film.genre && film.genre.toLowerCase().includes(genre.toLowerCase())
-      )
-      setFilms(filtered)
+      // Filter dari semua film (perlu API call)
+      fetch(`/api/films?genre=${encodeURIComponent(genre)}`)
+        .then(res => res.json())
+        .then(filtered => {
+          setFilms(filtered)
+          setHasMore(false) // Tidak ada lazy loading untuk filter
+        })
     }
   }
 
+  // Untuk filter genre, reset infinite scroll
+  useEffect(() => {
+    if (activeGenre === '') {
+      // Reset ke state awal
+      setFilms(initialFilms)
+      setOffset(initialFilms.length)
+      setHasMore(initialFilms.length < totalFilms)
+    }
+  }, [activeGenre, initialFilms, totalFilms])
+
   return (
     <>
-      {/* Hero Section */}
       <HeroSection film={featuredFilm} />
       
       <div className="container">
@@ -102,7 +169,7 @@ export default function HomeClient({ initialFilms, initialGenres, featuredFilm, 
           <section className="section">
             <SectionHeader title="Terpopuler" icon="fire" count={popularFilms.length} />
             <div className="film-grid grid-6">
-              {popularFilms.map((film, i) => (
+              {popularFilms.map((film) => (
                 <FilmCard key={film.id} film={film} />
               ))}
             </div>
@@ -134,13 +201,26 @@ export default function HomeClient({ initialFilms, initialGenres, featuredFilm, 
           <SectionHeader 
             title={activeGenre ? `Genre: ${activeGenre}` : "Terbaru"} 
             icon="clock" 
-            count={films.length} 
+            count={activeGenre ? films.length : totalFilms} 
           />
           <div className="film-grid">
-            {films.map((film) => (
-              <FilmCard key={film.id} film={film} />
+            {films.map((film, index) => (
+              <div
+                key={film.id}
+                ref={index === films.length - 1 ? lastFilmRef : null}
+              >
+                <FilmCard film={film} />
+              </div>
             ))}
           </div>
+          
+          {loading && <LoadingSpinner />}
+          
+          {!hasMore && !activeGenre && films.length > 0 && films.length >= totalFilms && (
+            <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+              ✅ Semua {totalFilms} film sudah ditampilkan
+            </p>
+          )}
         </section>
         
         {films.length === 0 && (
