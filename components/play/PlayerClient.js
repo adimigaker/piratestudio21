@@ -136,14 +136,14 @@ function loadDisqus(filmId, filmTitle) {
   }
 }
 
-// Fungsi download subtitle via API
+// Fungsi download subtitle via API (force download)
 const downloadSubtitle = (url) => {
   if (!url) return
   const encodedUrl = encodeURIComponent(url)
   window.open(`/api/download?url=${encodedUrl}`, '_blank')
 }
 
-// Helper function untuk cek apakah URL valid
+// Helper function untuk cek apakah URL valid (bukan JSON array kosong)
 const hasValidUrl = (url) => {
   if (!url) return false
   if (url === '[]') return false
@@ -295,12 +295,11 @@ export default function PlayerClient({ film }) {
           </div>
         )}
 
-        {/* Action Buttons - hanya muncul jika URL valid */}
+        {/* Action Buttons */}
         <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
           {hasValidUrl(film.download_url) && (
             <a 
               href={film.download_url} 
-              download
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-action btn-action-download"
