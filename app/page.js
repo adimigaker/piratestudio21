@@ -1,25 +1,34 @@
 import { supabase } from '@/lib/supabaseClient'
 
-export default async function Home() {
-  // Ambil data film dari Supabase
-  const { data: films, error } = await supabase
+async function getFilms() {
+  const { data } = await supabase
     .from('PirateStudio21_DB')
     .select('*')
-    .limit(10)
+    .order('year', { ascending: false })
+  
+  return data || []
+}
 
-  if (error) {
-    return <div>Error: {error.message}</div>
-  }
-
+export default async function Home() {
+  const films = await getFilms()
+  
   return (
     <div className="container" style={{ paddingTop: '80px' }}>
-      <h1>Pirate Studio 21</h1>
+      <h1 style={{ color: '#e50914' }}>Pirate Studio 21</h1>
+      <p>Streaming film dan series subtitle Indonesia</p>
+      
       <div className="film-grid">
         {films.map((film) => (
           <a key={film.id} href={`/play/${film.id}`} className="film-card">
-            <img src={film.poster} alt={film.title} />
-            <div className="card-title">{film.title}</div>
-            <div className="card-year">{film.year}</div>
+            <img 
+              src={film.poster || '/placeholder.jpg'} 
+              alt={film.title}
+            />
+            <div className="card-overlay"></div>
+            <div className="card-info-bottom">
+              <div className="card-title">{film.title}</div>
+              <div className="card-year">{film.year} • {film.rating}⭐</div>
+            </div>
           </a>
         ))}
       </div>
