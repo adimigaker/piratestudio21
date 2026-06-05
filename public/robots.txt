@@ -1,0 +1,12 @@
+# Robots.txt untuk Pirate Studio 21
+User-agent: *
+Allow: /
+Allow: /play/
+Allow: /?genre=
+
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /editor.html
+Disallow: /galeri.html
+
+Sitemap: https://piratestudio21.vercel.app/sitemap.xml
