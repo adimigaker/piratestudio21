@@ -164,7 +164,7 @@ ul, ol {
     letter-spacing: 3px;
     display: flex;
     align-items: center;
-    gap: 1px;
+    gap: 3px;
     user-select: none;
     text-decoration: none;
     transition: opacity 0.2s;
