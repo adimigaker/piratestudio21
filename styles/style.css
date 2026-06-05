@@ -1293,19 +1293,15 @@ main {
    FOCUS STYLES FOR KEYBOARD/REMOTE NAVIGATION
    ============================================= */
 
-/* Focus style untuk semua elemen interaktif */
-a:focus-visible,
-button:focus-visible,
-.film-card:focus-visible,
-.genre-tag:focus-visible,
-.server-btn:focus-visible,
-.episode-btn:focus-visible,
-.btn:focus-visible,
-.search-input:focus-visible,
-.back-btn:focus-visible,
-.logo:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 3px;
+/* Hanya hilangkan outline untuk focus biasa (mouse click) */
+*:focus {
+    outline: none;
+}
+
+/* Tampilkan outline untuk focus-visible (keyboard/remote) */
+*:focus-visible {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 3px !important;
     transform: scale(1.02);
     transition: all 0.1s ease;
     position: relative;
@@ -1314,40 +1310,35 @@ button:focus-visible,
 
 /* Khusus untuk film card */
 .film-card:focus-visible {
-    outline-offset: 2px;
+    outline-offset: 2px !important;
     box-shadow: 0 0 0 3px var(--accent), 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* Untuk tombol server/ episode */
 .server-btn:focus-visible,
 .episode-btn:focus-visible {
-    outline-offset: 2px;
+    outline-offset: 2px !important;
     background: var(--accent);
     color: #fff;
 }
 
 /* Untuk genre tag */
 .genre-tag:focus-visible {
-    outline-offset: 2px;
+    outline-offset: 2px !important;
     background: var(--accent);
     color: #fff;
 }
 
 /* Untuk link kembali */
 .back-btn:focus-visible {
-    outline-offset: 2px;
+    outline-offset: 2px !important;
     color: var(--accent);
 }
 
 /* Untuk logo */
 .logo:focus-visible {
-    outline-offset: 4px;
+    outline-offset: 4px !important;
     opacity: 0.85;
-}
-
-/* Untuk menghilangkan default outline tapi tetap pakai custom */
-* {
-    outline: none;
 }
 
 /* Smooth scroll saat focus pindah */
