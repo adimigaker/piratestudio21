@@ -17,6 +17,15 @@ async function getFeatured() {
   return data || []
 }
 
+async function getPopular() {
+  const { data } = await supabase
+    .from('PirateStudio21_DB')
+    .select('*')
+    .eq('popular', true)
+    .limit(8)
+  return data || []
+}
+
 async function getGenres() {
   const { data } = await supabase
     .from('PirateStudio21_DB')
@@ -39,13 +48,13 @@ async function getGenres() {
 }
 
 export default async function Home() {
-  const [films, featured, genres] = await Promise.all([
+  const [films, featured, popular, genres] = await Promise.all([
     getFilms(),
     getFeatured(),
+    getPopular(),
     getGenres()
   ])
   
-  // Pilih film featured secara random
   const randomFeatured = featured.length > 0 
     ? featured[Math.floor(Math.random() * featured.length)]
     : null
@@ -55,6 +64,7 @@ export default async function Home() {
       initialFilms={films} 
       initialGenres={genres}
       featuredFilm={randomFeatured}
+      popularFilms={popular}
     />
   )
 }
