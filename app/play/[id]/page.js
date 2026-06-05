@@ -22,7 +22,7 @@ function parseEpisodes(embedData) {
   return Array.isArray(embedData) ? embedData : []
 }
 
-// Komponen Client yang sebenarnya (pakai 'use client')
+// Komponen Client
 function ClientPlayerContent({ film, episodes }) {
   'use client'
   const { useSearchParams } = require('next/navigation')
@@ -32,6 +32,7 @@ function ClientPlayerContent({ film, episodes }) {
   const epParam = searchParams.get('ep')
   const [selectedEp, setSelectedEp] = useState(null)
   const [isTrailer, setIsTrailer] = useState(false)
+  const [server, setServer] = useState('embed') // 'embed' atau 'mirror'
 
   // Inisialisasi episode pertama
   useEffect(() => {
@@ -51,19 +52,24 @@ function ClientPlayerContent({ film, episodes }) {
     }
   }, [epParam, episodes])
 
-  // Tentukan URL player
+  // Tentukan URL player berdasarkan server yang dipilih
   let embedUrl = ''
   if (isTrailer) {
     embedUrl = film.trailer
   } else {
     if (film.type === 'series' && selectedEp) {
-      embedUrl = selectedEp.embed
+      embedUrl = server === 'embed' ? selectedEp.embed : selectedEp.mirror
     } else {
-      embedUrl = typeof film.embed_url === 'string' ? film.embed_url : ''
+      embedUrl = server === 'embed' 
+        ? (typeof film.embed_url === 'string' ? film.embed_url : '')
+        : film.mirror_url
     }
   }
 
   const hasTrailer = !!film.trailer
+  const hasMirror = film.type === 'series' 
+    ? (selectedEp && selectedEp.mirror)
+    : !!film.mirror_url
 
   return (
     <div>
@@ -81,6 +87,25 @@ function ClientPlayerContent({ film, episodes }) {
             onClick={() => setIsTrailer(false)}
           >
             {film.type === 'series' ? '📺 Full Series' : '🎥 Full Film'}
+          </button>
+        </div>
+      )}
+
+      {/* Tombol Server Selector (hanya jika ada mirror) */}
+      {!isTrailer && hasMirror && (
+        <div className="server-bar" style={{ marginTop: '16px' }}>
+          <span className="server-label">Server:</span>
+          <button
+            className={`server-btn ${server === 'embed' ? 'active' : ''}`}
+            onClick={() => setServer('embed')}
+          >
+            Server 1
+          </button>
+          <button
+            className={`server-btn ${server === 'mirror' ? 'active' : ''}`}
+            onClick={() => setServer('mirror')}
+          >
+            Server 2
           </button>
         </div>
       )}
@@ -130,7 +155,7 @@ function ClientPlayerContent({ film, episodes }) {
   )
 }
 
-// Bungkus dengan Suspense (wajib untuk useSearchParams)
+// Bungkus dengan Suspense
 function ClientPlayer({ film, episodes }) {
   return (
     <Suspense fallback={<div className="player-loading">Memuat player...</div>}>
@@ -156,10 +181,8 @@ export default async function PlayPage({ params }) {
         {isSeries && <span style={{ color: '#e50914', fontSize: '0.6em', marginLeft: '10px' }}>SERIES</span>}
       </h1>
 
-      {/* Player Interaktif */}
       <ClientPlayer film={film} episodes={episodes} />
 
-      {/* Sinopsis */}
       {film.synopsis && (
         <div className="info-synopsis" style={{ marginTop: '24px' }}>
           <div className="info-synopsis-label">Sinopsis</div>
@@ -167,7 +190,6 @@ export default async function PlayPage({ params }) {
         </div>
       )}
 
-      {/* Tombol Download & Subtitle */}
       <div style={{ display: 'flex', gap: '10px', marginTop: '24px', marginBottom: '40px' }}>
         {film.download_url && (
           <a href={film.download_url} target="_blank" className="btn-action btn-action-download">
