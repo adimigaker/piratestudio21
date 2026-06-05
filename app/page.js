@@ -48,7 +48,7 @@ async function getGenres() {
 }
 
 // =============================================
-// COMPONENT CARD (Server Component)
+// COMPONENT CARD
 // =============================================
 
 function FilmCard({ film, index = 0 }) {
@@ -149,13 +149,13 @@ function HeroSection({ film }) {
   )
 }
 
-function GenreTags({ genres, activeGenre = '' }) {
+function GenreTags({ genres }) {
   return (
     <div className="genre-tags">
       <span className="genre-label">🎬 Genre:</span>
-      <a href="/" className={`genre-tag ${!activeGenre ? 'active' : ''}`}>Semua</a>
+      <a href="/" className="genre-tag active">Semua</a>
       {genres.slice(0, 12).map((g) => (
-        <a key={g} href={`/?genre=${encodeURIComponent(g)}`} className={`genre-tag ${g === activeGenre ? 'active' : ''}`}>
+        <a key={g} href={`/?genre=${encodeURIComponent(g)}`} className="genre-tag">
           {g}
         </a>
       ))}
@@ -163,7 +163,7 @@ function GenreTags({ genres, activeGenre = '' }) {
   )
 }
 
-function SectionHeader({ title, icon, count, seeAllLink }) {
+function SectionHeader({ title, icon, count }) {
   return (
     <div className="section-header">
       <h2 className="section-title">
@@ -173,11 +173,6 @@ function SectionHeader({ title, icon, count, seeAllLink }) {
         {!icon && '🎬'} {title}
       </h2>
       {count && <span className="section-count">{count} film</span>}
-      {seeAllLink && (
-        <a href={seeAllLink} className="see-all">
-          Lihat Semua →
-        </a>
-      )}
     </div>
   )
 }
@@ -186,42 +181,32 @@ function SectionHeader({ title, icon, count, seeAllLink }) {
 // MAIN PAGE
 // =============================================
 
-export default async function Home({ searchParams }) {
-  const genreFilter = (await searchParams).genre || ''
-  
-  const [featured, popular, allLatest, allGenres] = await Promise.all([
+export default async function Home() {
+  const [featured, popular, latest, allGenres] = await Promise.all([
     getFeatured(),
     getPopular(),
     getLatest(12),
     getGenres()
   ])
   
-  // Filter berdasarkan genre jika ada parameter genre
-  let latest = allLatest
-  if (genreFilter) {
-    latest = allLatest.filter(film => 
-      film.genre && film.genre.toLowerCase().includes(genreFilter.toLowerCase())
-    )
-  }
-  
   // Pilih film random untuk hero
   const randomFeatured = featured.length > 0 
     ? featured[Math.floor(Math.random() * featured.length)]
-    : (allLatest[0] || null)
+    : (latest[0] || null)
 
   return (
     <div>
       <HeroSection film={randomFeatured} />
       
       <div className="container">
-        <GenreTags genres={allGenres} activeGenre={genreFilter} />
+        <GenreTags genres={allGenres} />
       </div>
       
       {/* Terpopuler */}
       {popular.length > 0 && (
         <section className="section">
           <div className="container">
-            <SectionHeader title="Terpopuler" icon="fire" count={popular.length} seeAllLink="/" />
+            <SectionHeader title="Terpopuler" icon="fire" count={popular.length} />
             <div className="film-grid grid-6">
               {popular.map((film, i) => (
                 <FilmCard key={film.id} film={film} index={i} />
@@ -235,11 +220,7 @@ export default async function Home({ searchParams }) {
       {latest.length > 0 && (
         <section className="section">
           <div className="container">
-            <SectionHeader 
-              title={genreFilter ? `Hasil untuk Genre: ${genreFilter}` : 'Terbaru'} 
-              icon="clock" 
-              count={latest.length} 
-            />
+            <SectionHeader title="Terbaru" icon="clock" count={latest.length} />
             <div className="film-grid">
               {latest.map((film, i) => (
                 <FilmCard key={film.id} film={film} index={i} />
@@ -247,13 +228,6 @@ export default async function Home({ searchParams }) {
             </div>
           </div>
         </section>
-      )}
-      
-      {latest.length === 0 && (
-        <div className="container" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p>Tidak ada film dalam genre ini.</p>
-          <a href="/" className="btn btn-primary" style={{ marginTop: '16px' }}>← Lihat Semua Film</a>
-        </div>
       )}
     </div>
   )
