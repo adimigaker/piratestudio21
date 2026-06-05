@@ -272,7 +272,7 @@ export default function PlayerClient({ film }) {
         </button>
       </div>
 
-      {/* Server Selector */}
+      {/* Server Selector - hanya tampil jika bukan mode trailer */}
       {!isTrailer && hasMirror && (
         <div className="server-bar" style={{ marginTop: '4px' }}>
           <span className="server-label"><Icons.server /></span>
@@ -291,7 +291,7 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Episode List */}
+      {/* Episode List - hanya tampil jika bukan mode trailer */}
       {isSeries && !isTrailer && episodes.length > 0 && (
         <div className="server-bar" style={{ justifyContent: 'flex-start', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
           {episodes.map((ep) => (
@@ -321,27 +321,29 @@ export default function PlayerClient({ film }) {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
-          {hasValidUrl(getCurrentDownloadUrl()) && (
-            <a 
-              href={getCurrentDownloadUrl()} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="btn-action btn-action-download"
-            >
-              <Icons.download /> Download
-            </a>
-          )}
-          {hasValidUrl(getCurrentSubtitleUrl()) && (
-            <button 
-              onClick={() => downloadSubtitle(getCurrentSubtitleUrl())}
-              className="btn-action"
-            >
-              <Icons.subtitle /> Subtitle
-            </button>
-          )}
-        </div>
+        {/* Action Buttons - hanya tampil jika bukan mode trailer */}
+        {!isTrailer && (
+          <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
+            {hasValidUrl(getCurrentDownloadUrl()) && (
+              <a 
+                href={getCurrentDownloadUrl()} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-action btn-action-download"
+              >
+                <Icons.download /> Download
+              </a>
+            )}
+            {hasValidUrl(getCurrentSubtitleUrl()) && (
+              <button 
+                onClick={() => downloadSubtitle(getCurrentSubtitleUrl())}
+                className="btn-action"
+              >
+                <Icons.subtitle /> Subtitle
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Comments */}
         <div className="comments-section">
