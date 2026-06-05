@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 
 async function getFilm(id) {
   const { data } = await supabase
@@ -21,29 +22,36 @@ function parseEpisodes(embedData) {
   return Array.isArray(embedData) ? embedData : []
 }
 
-// Komponen Client (interaktif)
-function ClientPlayer({ film, episodes, initialEp }) {
+// Komponen Client yang sebenarnya (pakai 'use client')
+function ClientPlayerContent({ film, episodes }) {
   'use client'
-  import { useSearchParams } from 'next/navigation'
-  import { useState, useEffect } from 'react'
-
+  const { useSearchParams } = require('next/navigation')
+  const { useState, useEffect } = require('react')
+  
   const searchParams = useSearchParams()
   const epParam = searchParams.get('ep')
-  const [selectedEp, setSelectedEp] = useState(initialEp)
+  const [selectedEp, setSelectedEp] = useState(null)
   const [isTrailer, setIsTrailer] = useState(false)
 
-  // Update episode saat parameter URL berubah
+  // Inisialisasi episode pertama
   useEffect(() => {
-    if (epParam && film.type === 'series') {
+    if (episodes.length > 0 && !selectedEp) {
+      const epNum = epParam ? parseInt(epParam) : episodes[0].ep
+      const found = episodes.find(ep => ep.ep === epNum)
+      setSelectedEp(found || episodes[0])
+    }
+  }, [episodes, epParam, selectedEp])
+
+  // Update episode saat parameter ep berubah
+  useEffect(() => {
+    if (epParam && episodes.length > 0) {
       const epNum = parseInt(epParam)
       const found = episodes.find(ep => ep.ep === epNum)
       if (found) setSelectedEp(found)
-    } else if (film.type !== 'series') {
-      setSelectedEp(null)
     }
-  }, [epParam, episodes, film.type])
+  }, [epParam, episodes])
 
-  // Tentukan URL yang akan diputar
+  // Tentukan URL player
   let embedUrl = ''
   if (isTrailer) {
     embedUrl = film.trailer
@@ -59,7 +67,7 @@ function ClientPlayer({ film, episodes, initialEp }) {
 
   return (
     <div>
-      {/* Tombol Trailer / Full (Muncul jika ada trailer) */}
+      {/* Tombol Trailer / Full Film/Series */}
       {hasTrailer && (
         <div className="server-bar" style={{ marginTop: '16px' }}>
           <button
@@ -94,7 +102,7 @@ function ClientPlayer({ film, episodes, initialEp }) {
         </div>
       </div>
 
-      {/* Daftar Episode (Hanya untuk Series dan ketika bukan mode trailer) */}
+      {/* Daftar Episode (Hanya untuk Series) */}
       {!isTrailer && film.type === 'series' && episodes.length > 0 && (
         <div style={{ marginTop: '24px' }}>
           <h3 style={{ color: '#e50914', marginBottom: '12px' }}>Daftar Episode:</h3>
@@ -122,6 +130,15 @@ function ClientPlayer({ film, episodes, initialEp }) {
   )
 }
 
+// Bungkus dengan Suspense (wajib untuk useSearchParams)
+function ClientPlayer({ film, episodes }) {
+  return (
+    <Suspense fallback={<div className="player-loading">Memuat player...</div>}>
+      <ClientPlayerContent film={film} episodes={episodes} />
+    </Suspense>
+  )
+}
+
 export default async function PlayPage({ params }) {
   const { id } = await params
   const film = await getFilm(id)
@@ -129,7 +146,6 @@ export default async function PlayPage({ params }) {
 
   const isSeries = film.type === 'series'
   const episodes = isSeries ? parseEpisodes(film.embed_url) : []
-  const initialEp = episodes[0] || null
 
   return (
     <div className="container" style={{ paddingTop: '80px' }}>
@@ -140,8 +156,8 @@ export default async function PlayPage({ params }) {
         {isSeries && <span style={{ color: '#e50914', fontSize: '0.6em', marginLeft: '10px' }}>SERIES</span>}
       </h1>
 
-      {/* Komponen Player Interaktif */}
-      <ClientPlayer film={film} episodes={episodes} initialEp={initialEp} />
+      {/* Player Interaktif */}
+      <ClientPlayer film={film} episodes={episodes} />
 
       {/* Sinopsis */}
       {film.synopsis && (
