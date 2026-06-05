@@ -372,10 +372,6 @@ export default function PlayerClient({ film }) {
                   <span className="info-more-value">{film.cast.split(',').slice(0, 3).join(', ')}</span>
                 </div>
               )}
-              <div className="info-more-item">
-                <span className="info-more-label">Tipe</span>
-                <span className="info-more-value">{isSeries ? 'SERIES' : 'MOVIE'}</span>
-              </div>
             </div>
           </div>
         </div>
