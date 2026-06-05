@@ -198,7 +198,6 @@ export default function PlayerClient({ film }) {
   const isSeries = film.type === 'series'
   const hasTrailer = !!film.trailer
 
-  // Helper functions untuk mendapatkan URL berdasarkan episode saat ini
   const getCurrentMirrorUrl = () => {
     if (isSeries && currentEpisode && currentEpisode.mirror) {
       return currentEpisode.mirror
@@ -220,7 +219,6 @@ export default function PlayerClient({ film }) {
     return film.subtitle_url
   }
 
-  // Tentukan URL player yang aktif
   let activeUrl = ''
   if (isTrailer && film.trailer) {
     activeUrl = film.trailer
@@ -232,7 +230,6 @@ export default function PlayerClient({ film }) {
       : getCurrentMirrorUrl()
   }
 
-  // Cek apakah mirror tersedia untuk episode saat ini
   const hasMirror = isSeries 
     ? (currentEpisode && currentEpisode.mirror && currentEpisode.mirror !== '')
     : hasValidUrl(film.mirror_url)
@@ -317,10 +314,9 @@ export default function PlayerClient({ film }) {
         </div>
       )}
 
-      {/* Info Film - Desain Lama dengan Poster, tanpa Type */}
+      {/* Info Film */}
       <div className="container" style={{ maxWidth: '900px', marginTop: '24px' }}>
         <div className="info-grid">
-          {/* Poster */}
           <img 
             src={film.poster || '/placeholder.jpg'} 
             alt={film.title} 
@@ -328,11 +324,8 @@ export default function PlayerClient({ film }) {
             onError={(e) => { e.target.style.background = '#1a1a24'; e.target.style.objectFit = 'contain'; }}
           />
           
-          {/* Info Details */}
           <div className="info-details">
-            <h1 className="info-title">
-              {film.title} ({film.year})
-            </h1>
+            <h1 className="info-title">{film.title} ({film.year})</h1>
             
             <div className="info-meta">
               <span className="info-year">{film.year || '—'}</span>
@@ -348,7 +341,6 @@ export default function PlayerClient({ film }) {
               )}
             </div>
             
-            {/* Genre Tags */}
             {film.genre && (
               <div className="info-genres">
                 {film.genre.split(',').map((g, i) => (
@@ -357,25 +349,26 @@ export default function PlayerClient({ film }) {
               </div>
             )}
             
-            {/* Director & Cast (tanpa Type) */}
-            <div className="info-more">
-              {film.director && (
-                <div className="info-more-item">
-                  <span className="info-more-label">Sutradara</span>
-                  <span className="info-more-value">{film.director}</span>
-                </div>
-              )}
-              {film.cast && (
-                <div className="info-more-item">
-                  <span className="info-more-label">Pemeran</span>
-                  <span className="info-more-value">{film.cast.split(',').slice(0, 3).join(', ')}</span>
-                </div>
-              )}
-            </div>
+            {/* Hanya tampil jika ada director atau cast */}
+            {(film.director || film.cast) && (
+              <div className="info-more">
+                {film.director && (
+                  <div className="info-more-item">
+                    <span className="info-more-label">Sutradara</span>
+                    <span className="info-more-value">{film.director}</span>
+                  </div>
+                )}
+                {film.cast && (
+                  <div className="info-more-item">
+                    <span className="info-more-label">Pemeran</span>
+                    <span className="info-more-value">{film.cast.split(',').slice(0, 3).join(', ')}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
         
-        {/* Sinopsis */}
         {film.synopsis && (
           <div className="info-synopsis">
             <div className="info-synopsis-label">Sinopsis</div>
@@ -383,7 +376,6 @@ export default function PlayerClient({ film }) {
           </div>
         )}
         
-        {/* Action Buttons */}
         {!isTrailer && (
           <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
             {hasValidUrl(getCurrentDownloadUrl()) && (
@@ -407,7 +399,6 @@ export default function PlayerClient({ film }) {
           </div>
         )}
         
-        {/* Comments */}
         <div className="comments-section">
           <div className="comments-title">
             <Icons.comment /> Komentar
