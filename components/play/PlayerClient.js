@@ -224,17 +224,29 @@ export default function PlayerClient({ film }) {
         )}
 
         <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
-          {film.download_url && (
-            <a href={film.download_url} target="_blank" className="btn-action btn-action-download">
-              ⬇️ Download
-            </a>
-          )}
-          {film.subtitle_url && (
-            <a href={film.subtitle_url} target="_blank" className="btn-action">
-              📝 Subtitle
-            </a>
-          )}
-        </div>
+  {film.download_url && (
+    <a 
+      href={film.download_url} 
+      download
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="btn-action btn-action-download"
+    >
+      ⬇️ Download
+    </a>
+  )}
+  {film.subtitle_url && (
+    <a 
+      href={film.subtitle_url} 
+      download
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="btn-action"
+    >
+      📝 Subtitle
+    </a>
+  )}
+</div>
 
         {/* Disqus Comments */}
         <div className="comments-section">
