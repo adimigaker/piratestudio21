@@ -2,27 +2,21 @@ export default async function sitemap() {
   const baseUrl = 'https://piratestudio21.vercel.app'
   const today = new Date()
   
-  // Fetch film dari Supabase REST API langsung
-  const supabaseUrl = 'https://eogdtpkiwzlarllnxsrj.supabase.co'
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2R0cGtpd3psYXJsbG54c3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODg0NzMsImV4cCI6MjA4OTY2NDQ3M30.eZPbYTuaDerKL9SOEa4ctkxSlU1PiEAU9l42czgYOyI'
-  
   let films = []
   let genres = new Set()
   
   try {
-    // Ambil data film
-    const filmRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=id,updated_at`, {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
-      }
-    })
-    
+    // Ambil semua film dari API internal
+    const filmRes = await fetch(`${baseUrl}/api/films?limit=100&offset=0`)
     if (filmRes.ok) {
-      films = await filmRes.json()
+      const data = await filmRes.json()
+      films = data
     }
     
-    // Ambil data genre
+    // Ambil semua genre dari database
+    const supabaseUrl = 'https://eogdtpkiwzlarllnxsrj.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2R0cGtpd3psYXJsbG54c3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODg0NzMsImV4cCI6MjA4OTY2NDQ3M30.eZPbYTuaDerKL9SOEa4ctkxSlU1PiEAU9l42czgYOyI'
+    
     const genreRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=genre`, {
       headers: {
         'apikey': supabaseKey,
@@ -45,7 +39,6 @@ export default async function sitemap() {
     console.error('Error fetching data for sitemap:', error)
   }
   
-  // URL statis (homepage)
   const routes = [
     {
       url: baseUrl,
@@ -55,7 +48,7 @@ export default async function sitemap() {
     },
   ]
   
-  // URL film dinamis
+  // URL film
   const filmRoutes = films.map((film) => ({
     url: `${baseUrl}/play/${film.id}`,
     lastModified: film.updated_at ? new Date(film.updated_at) : today,
@@ -63,13 +56,15 @@ export default async function sitemap() {
     priority: 0.8,
   }))
   
-  // URL genre dinamis
+  // URL genre
   const genreRoutes = Array.from(genres).map((genre) => ({
     url: `${baseUrl}/?genre=${encodeURIComponent(genre)}`,
     lastModified: today,
     changeFrequency: 'weekly',
     priority: 0.6,
   }))
+  
+  console.log(`Sitemap generated: ${routes.length} static, ${filmRoutes.length} films, ${genreRoutes.length} genres`)
   
   return [...routes, ...filmRoutes, ...genreRoutes]
 }
