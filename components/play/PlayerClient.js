@@ -143,6 +143,15 @@ const downloadSubtitle = (url) => {
   window.open(`/api/download?url=${encodedUrl}`, '_blank')
 }
 
+// Helper function untuk cek apakah URL valid
+const hasValidUrl = (url) => {
+  if (!url) return false
+  if (url === '[]') return false
+  if (url === '{}') return false
+  if (typeof url === 'string' && url.trim() === '') return false
+  return true
+}
+
 export default function PlayerClient({ film }) {
   const searchParams = useSearchParams()
   const [episodes, setEpisodes] = useState([])
@@ -286,9 +295,9 @@ export default function PlayerClient({ film }) {
           </div>
         )}
 
-        {/* Action Buttons */}
+        {/* Action Buttons - hanya muncul jika URL valid */}
         <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
-          {film.download_url && (
+          {hasValidUrl(film.download_url) && (
             <a 
               href={film.download_url} 
               download
@@ -299,7 +308,7 @@ export default function PlayerClient({ film }) {
               <Icons.download /> Download
             </a>
           )}
-          {film.subtitle_url && (
+          {hasValidUrl(film.subtitle_url) && (
             <button 
               onClick={() => downloadSubtitle(film.subtitle_url)}
               className="btn-action"
