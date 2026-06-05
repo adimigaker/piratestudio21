@@ -1,5 +1,5 @@
 export default async function sitemap() {
-  const baseUrl = 'https://piratestudio21.vercel.app'
+  const baseUrl = 'https://piratestudio.vercel.app'
   const today = new Date()
   
   let films = []
