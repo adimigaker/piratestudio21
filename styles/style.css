@@ -169,6 +169,7 @@ ul, ol {
     text-decoration: none;
     transition: opacity 0.2s;
     flex-shrink: 0;
+    font-weight: bold;
 }
 
 .logo:hover {
@@ -178,16 +179,19 @@ ul, ol {
 .logo .brand-pirate {
     color: var(--accent);
     text-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+    font-weight: bold;
 }
 
 .logo .brand-studio {
     color: var(--text);
+    font-weight: bold;
 }
 
 .logo .brand-num {
     color: var(--text);
     opacity: 0.5;
     font-size: 1.2rem;
+    font-weight: bold;
 }
 
 /* =============================================
@@ -205,6 +209,7 @@ ul, ol {
     color: var(--text3);
     pointer-events: none;
     transition: color var(--transition);
+    z-index: 1;
 }
 
 .search-input {
@@ -215,7 +220,8 @@ ul, ol {
     color: var(--text);
     font-size: 0.85rem;
     width: 200px;
-    transition: all var(--transition);
+    transition: width 0.3s ease, background 0.2s, border-color 0.2s;
+    outline: none;
 }
 
 .search-input:focus {
@@ -233,11 +239,12 @@ ul, ol {
     color: var(--text3);
 }
 
-/* Search Dropdown */
+/* Search Dropdown - prevent going off-screen */
 .search-dropdown {
     position: absolute;
     top: calc(100% + 8px);
-    left: 0;
+    right: 0;
+    left: auto;
     min-width: 320px;
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -346,6 +353,7 @@ ul, ol {
     opacity: 0.3;
 }
 
+/* Responsive search dropdown - prevent off-screen on mobile */
 @media (max-width: 640px) {
     .search-input {
         width: 140px;
@@ -1222,6 +1230,7 @@ main {
         gap: 8px;
     }
 }
+
 /* ─── SKELETON CARDS ─────────────────────────── */
 .skeleton-card {
     border-radius: var(--radius, 10px);
@@ -1268,12 +1277,10 @@ main {
 #ptr-indicator svg { opacity: 0.7; }
 
 /* ─── GOOGLE DRIVE PLAYER ────────────────────── */
-/* Drive embed punya toolbar sendiri ~40px di bawah video */
-/* Kita beri padding-bottom lebih untuk tampung toolbar itu */
 .drive-frame {
     position: relative;
     width: 100%;
-    padding-bottom: calc(56.25% + 44px); /* 16:9 + toolbar Drive */
+    padding-bottom: calc(56.25% + 44px);
     height: 0;
     overflow: hidden;
     background: #000;
