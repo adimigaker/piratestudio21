@@ -1,6 +1,71 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+
+// SVG Icons
+const Icons = {
+  star: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  ),
+  clock: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  ),
+  fire: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+    </svg>
+  ),
+  film: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+      <line x1="7" y1="2" x2="7" y2="22"/>
+      <line x1="17" y1="2" x2="17" y2="22"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="2" y1="7" x2="7" y2="7"/>
+      <line x1="2" y1="17" x2="7" y2="17"/>
+      <line x1="17" y1="7" x2="22" y2="7"/>
+      <line x1="17" y1="17" x2="22" y2="17"/>
+    </svg>
+  ),
+  genre: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+      <line x1="7" y1="2" x2="7" y2="22"/>
+      <line x1="17" y1="2" x2="17" y2="22"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="2" y1="7" x2="7" y2="7"/>
+      <line x1="2" y1="17" x2="7" y2="17"/>
+      <line x1="17" y1="7" x2="22" y2="7"/>
+      <line x1="17" y1="17" x2="22" y2="17"/>
+    </svg>
+  ),
+  play: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  ),
+  info: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+  ),
+  spinner: () => (
+    <div className="spinner-lg"></div>
+  ),
+  check: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  )
+}
 
 function FilmCard({ film }) {
   return (
@@ -28,7 +93,7 @@ function HeroSection({ film }) {
       <div className="hero-content">
         <div className="hero-badge">
           <span className="hero-badge-dot"></span>
-          🎬 Featured
+          <Icons.film /> Featured
         </div>
         <h1 className="hero-title">{film.title}</h1>
         <div className="hero-meta">
@@ -48,10 +113,10 @@ function HeroSection({ film }) {
         </p>
         <div className="hero-actions">
           <a href={`/play/${film.id}`} className="btn btn-primary">
-            ▶️ Tonton Sekarang
+            <Icons.play /> Tonton Sekarang
           </a>
           <a href={`/play/${film.id}`} className="btn btn-secondary">
-            ℹ️ Info Lebih
+            <Icons.info /> Info Lebih
           </a>
         </div>
       </div>
@@ -60,13 +125,16 @@ function HeroSection({ film }) {
 }
 
 function SectionHeader({ title, icon, count }) {
+  let IconComponent = null
+  if (icon === 'star') IconComponent = Icons.star
+  else if (icon === 'clock') IconComponent = Icons.clock
+  else if (icon === 'fire') IconComponent = Icons.fire
+  else if (icon === 'film') IconComponent = Icons.film
+
   return (
     <div className="section-header">
       <h2 className="section-title">
-        {icon === 'star' && '⭐'}
-        {icon === 'clock' && '🕐'}
-        {icon === 'fire' && '🔥'}
-        {!icon && '🎬'} {title}
+        {IconComponent && <IconComponent />} {title}
       </h2>
       {count && <span className="section-count">{count} film</span>}
     </div>
@@ -76,7 +144,7 @@ function SectionHeader({ title, icon, count }) {
 function LoadingSpinner() {
   return (
     <div style={{ textAlign: 'center', padding: '40px' }}>
-      <div className="spinner-lg"></div>
+      <Icons.spinner />
       <p style={{ marginTop: '12px', color: '#888' }}>Memuat film...</p>
     </div>
   )
@@ -87,13 +155,16 @@ export default function HomeClient({
   totalFilms, 
   initialGenres, 
   featuredFilm, 
-  popularFilms 
+  popularFilms,
+  initialGenre
 }) {
+  const router = useRouter()
+  const pathname = usePathname()
   const [films, setFilms] = useState(initialFilms)
   const [offset, setOffset] = useState(initialFilms.length)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(initialFilms.length < totalFilms)
-  const [activeGenre, setActiveGenre] = useState('')
+  const [activeGenre, setActiveGenre] = useState(initialGenre || '')
   const [genres] = useState(initialGenres)
   
   const observerRef = useRef()
@@ -133,30 +204,18 @@ export default function HomeClient({
   const filterByGenre = (genre) => {
     setActiveGenre(genre)
     if (genre === '') {
-      // Reset ke initial films (yang pertama)
-      setFilms(initialFilms)
-      setOffset(initialFilms.length)
-      setHasMore(initialFilms.length < totalFilms)
+      router.push(pathname)
     } else {
-      // Filter dari semua film (perlu API call)
-      fetch(`/api/films?genre=${encodeURIComponent(genre)}`)
-        .then(res => res.json())
-        .then(filtered => {
-          setFilms(filtered)
-          setHasMore(false) // Tidak ada lazy loading untuk filter
-        })
+      router.push(`/?genre=${encodeURIComponent(genre)}`)
     }
   }
 
-  // Untuk filter genre, reset infinite scroll
   useEffect(() => {
-    if (activeGenre === '') {
-      // Reset ke state awal
-      setFilms(initialFilms)
-      setOffset(initialFilms.length)
-      setHasMore(initialFilms.length < totalFilms)
-    }
-  }, [activeGenre, initialFilms, totalFilms])
+    setFilms(initialFilms)
+    setOffset(initialFilms.length)
+    setHasMore(initialFilms.length < totalFilms)
+    setActiveGenre(initialGenre || '')
+  }, [initialFilms, totalFilms, initialGenre])
 
   return (
     <>
@@ -178,7 +237,7 @@ export default function HomeClient({
         
         {/* Genre Tags */}
         <div className="genre-tags">
-          <span className="genre-label">🎬 Genre:</span>
+          <span className="genre-label"><Icons.genre /> Genre:</span>
           <button 
             className={`genre-tag ${activeGenre === '' ? 'active' : ''}`}
             onClick={() => filterByGenre('')}
@@ -196,11 +255,11 @@ export default function HomeClient({
           ))}
         </div>
         
-        {/* Film Grid (Terbaru / Hasil Filter) */}
+        {/* Film Grid */}
         <section className="section">
           <SectionHeader 
             title={activeGenre ? `Genre: ${activeGenre}` : "Terbaru"} 
-            icon="clock" 
+            icon={activeGenre ? "film" : "clock"}
             count={activeGenre ? films.length : totalFilms} 
           />
           <div className="film-grid">
@@ -218,7 +277,7 @@ export default function HomeClient({
           
           {!hasMore && !activeGenre && films.length > 0 && films.length >= totalFilms && (
             <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-              ✅ Semua {totalFilms} film sudah ditampilkan
+              <Icons.check /> Semua {totalFilms} film sudah ditampilkan
             </p>
           )}
         </section>
