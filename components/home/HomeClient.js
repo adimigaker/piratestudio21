@@ -68,13 +68,63 @@ const Icons = {
 }
 
 function FilmCard({ film }) {
+  const genres = film.genre ? film.genre.split(',').map(g => g.trim()) : []
+  const genreBadge = genres[0] || ''
+  const type = film.type === 'series' ? 'SERIES' : 'MOVIE'
+
   return (
     <a href={`/play/${film.id}`} className="film-card">
-      <img src={film.poster || '/placeholder.jpg'} alt={film.title} />
+      <img src={film.poster || '/placeholder.jpg'} alt={film.title} loading="lazy" />
+      
+      {/* Genre Badge - kiri atas */}
+      {genreBadge && (
+        <div className="card-badge">{genreBadge}</div>
+      )}
+      
+      {/* Type Badge - kanan atas */}
+      <div className="card-type">{type}</div>
+      
+      {/* Rating Badge - kanan bawah */}
+      {film.rating && (
+        <div className="card-rating">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          {film.rating}
+        </div>
+      )}
+      
+      {/* Overlay */}
       <div className="card-overlay"></div>
+      
+      {/* Info Bottom - tahun di kiri bawah */}
       <div className="card-info-bottom">
         <div className="card-title">{film.title}</div>
-        <div className="card-year">{film.year} • {film.rating}⭐</div>
+        <div className="card-year">{film.year || ''}</div>
+      </div>
+      
+      {/* Hover effect */}
+      <div className="card-hover">
+        <div className="card-play-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </div>
+        <div className="card-hover-title">{film.title}</div>
+        <div className="card-hover-meta">
+          <span>{film.year || '—'}</span>
+          {film.rating && (
+            <>
+              <span>•</span>
+              <span style={{ color: '#f5c518' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'inline', marginRight: '2px' }}>
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                {film.rating}
+              </span>
+            </>
+          )}
+        </div>
       </div>
     </a>
   )
