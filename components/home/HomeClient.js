@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 function FilmCard({ film }) {
   return (
@@ -59,7 +59,21 @@ function HeroSection({ film }) {
   )
 }
 
-export default function HomeClient({ initialFilms, initialGenres, featuredFilm }) {
+function SectionHeader({ title, icon, count }) {
+  return (
+    <div className="section-header">
+      <h2 className="section-title">
+        {icon === 'star' && '⭐'}
+        {icon === 'clock' && '🕐'}
+        {icon === 'fire' && '🔥'}
+        {!icon && '🎬'} {title}
+      </h2>
+      {count && <span className="section-count">{count} film</span>}
+    </div>
+  )
+}
+
+export default function HomeClient({ initialFilms, initialGenres, featuredFilm, popularFilms }) {
   const [films, setFilms] = useState(initialFilms)
   const [activeGenre, setActiveGenre] = useState('')
   const [genres] = useState(initialGenres)
@@ -82,6 +96,19 @@ export default function HomeClient({ initialFilms, initialGenres, featuredFilm }
       <HeroSection film={featuredFilm} />
       
       <div className="container">
+        
+        {/* Popular Section */}
+        {popularFilms && popularFilms.length > 0 && (
+          <section className="section">
+            <SectionHeader title="Terpopuler" icon="fire" count={popularFilms.length} />
+            <div className="film-grid grid-6">
+              {popularFilms.map((film, i) => (
+                <FilmCard key={film.id} film={film} />
+              ))}
+            </div>
+          </section>
+        )}
+        
         {/* Genre Tags */}
         <div className="genre-tags">
           <span className="genre-label">🎬 Genre:</span>
@@ -102,12 +129,19 @@ export default function HomeClient({ initialFilms, initialGenres, featuredFilm }
           ))}
         </div>
         
-        {/* Film Grid */}
-        <div className="film-grid">
-          {films.map((film) => (
-            <FilmCard key={film.id} film={film} />
-          ))}
-        </div>
+        {/* Film Grid (Terbaru / Hasil Filter) */}
+        <section className="section">
+          <SectionHeader 
+            title={activeGenre ? `Genre: ${activeGenre}` : "Terbaru"} 
+            icon="clock" 
+            count={films.length} 
+          />
+          <div className="film-grid">
+            {films.map((film) => (
+              <FilmCard key={film.id} film={film} />
+            ))}
+          </div>
+        </section>
         
         {films.length === 0 && (
           <p style={{ textAlign: 'center', padding: '40px' }}>
