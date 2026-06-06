@@ -1,73 +1,70 @@
-import { createClient } from '@supabase/supabase-js'
-
-export const revalidate = 3600 // Revalidate every hour
-
 export default async function sitemap() {
-  const baseUrl = 'https://piratestudio.vercel.app'
+  const baseUrl = 'https://piratestudio21.vercel.app'
+  const today = new Date()
   
-  // Initialize Supabase client
-  const supabaseUrl = 'https://eogdtpkiwzlarllnxsrj.supabase.co'
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2R0cGtpd3psYXJsbG54c3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODg0NzMsImV4cCI6MjA4OTY2NDQ3M30.eZPbYTuaDerKL9SOEa4ctkxSlU1PiEAU9l42czgYOyI'
+  let films = []
+  let genres = new Set()
   
-  const supabase = createClient(supabaseUrl, supabaseKey)
-  
-  // Fetch all films
-  const { data: films, error } = await supabase
-    .from('PirateStudio21_DB')
-    .select('id, updated_at, genre')
-    .order('id')
-  
-  if (error) {
-    console.error('Error fetching films:', error)
-    // Return at least the homepage
-    return [
-      {
-        url: baseUrl,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 1.0,
+  try {
+    // Ambil semua film dari API internal
+    const filmRes = await fetch(`${baseUrl}/api/films?limit=100&offset=0`)
+    if (filmRes.ok) {
+      const data = await filmRes.json()
+      films = data
+    }
+    
+    // Ambil semua genre dari database
+    const supabaseUrl = 'https://eogdtpkiwzlarllnxsrj.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2R0cGtpd3psYXJsbG54c3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODg0NzMsImV4cCI6MjA4OTY2NDQ3M30.eZPbYTuaDerKL9SOEa4ctkxSlU1PiEAU9l42czgYOyI'
+    
+    const genreRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=genre`, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`
       }
-    ]
-  }
-  
-  // Get unique genres
-  const genres = new Set()
-  films.forEach(film => {
-    if (film.genre) {
-      film.genre.split(',').forEach(g => {
-        const trimmed = g.trim()
-        if (trimmed) genres.add(trimmed)
+    })
+    
+    if (genreRes.ok) {
+      const genreData = await genreRes.json()
+      genreData.forEach(film => {
+        if (film.genre) {
+          film.genre.split(',').forEach(g => {
+            const trimmed = g.trim()
+            if (trimmed) genres.add(trimmed)
+          })
+        }
       })
     }
-  })
+  } catch (error) {
+    console.error('Error fetching data for sitemap:', error)
+  }
   
-  const currentDate = new Date()
-  
-  // Static routes
   const routes = [
     {
       url: baseUrl,
-      lastModified: currentDate,
+      lastModified: today,
       changeFrequency: 'daily',
       priority: 1.0,
     },
   ]
   
-  // Dynamic film routes
+  // URL film
   const filmRoutes = films.map((film) => ({
     url: `${baseUrl}/play/${film.id}`,
-    lastModified: film.updated_at ? new Date(film.updated_at) : currentDate,
+    lastModified: film.updated_at ? new Date(film.updated_at) : today,
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
   
-  // Dynamic genre routes
+  // URL genre
   const genreRoutes = Array.from(genres).map((genre) => ({
     url: `${baseUrl}/?genre=${encodeURIComponent(genre)}`,
-    lastModified: currentDate,
+    lastModified: today,
     changeFrequency: 'weekly',
     priority: 0.6,
   }))
+  
+  console.log(`Sitemap generated: ${routes.length} static, ${filmRoutes.length} films, ${genreRoutes.length} genres`)
   
   return [...routes, ...filmRoutes, ...genreRoutes]
 }
