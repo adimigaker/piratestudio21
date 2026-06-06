@@ -1,32 +1,35 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function GET() {
   const baseUrl = 'https://piratestudio.vercel.app'
+  
+  // Gunakan supabase client yang sama dengan aplikasi utama
   const supabaseUrl = 'https://eogdtpkiwzlarllnxsrj.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2R0cGtpd3psYXJsbG54c3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODg0NzMsImV4cCI6MjA4OTY2NDQ3M30.eZPbYTuaDerKL9SOEa4ctkxSlU1PiEAU9l42czgYOyI'
-
+  
+  const supabase = createClient(supabaseUrl, supabaseKey)
+  
   let films = []
   let genres = new Set()
-
+  
   try {
     // Ambil data film
-    const filmRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=id,updated_at,genre`, {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
-      },
-      cache: 'no-store'
-    })
-
-    if (filmRes.ok) {
-      const data = await filmRes.json()
-      films = data
-
+    const { data: filmsData, error: filmsError } = await supabase
+      .from('PirateStudio21_DB')
+      .select('id, updated_at, genre')
+      .order('id')
+    
+    if (filmsError) {
+      console.error('Error fetching films:', filmsError)
+    } else {
+      films = filmsData || []
+      
       // Ambil genre unik
-      data.forEach(film => {
+      filmsData.forEach(film => {
         if (film.genre) {
           film.genre.split(',').forEach(g => {
             const trimmed = g.trim()
@@ -34,15 +37,13 @@ export async function GET() {
           })
         }
       })
-    } else {
-      console.error('Failed to fetch films:', filmRes.status)
     }
   } catch (error) {
-    console.error('Error fetching data for sitemap:', error)
+    console.error('Error:', error)
   }
-
+  
   const now = new Date().toISOString()
-
+  
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -51,7 +52,7 @@ export async function GET() {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>`
-
+  
   // Tambahkan film
   for (const film of films) {
     xml += `
@@ -62,7 +63,7 @@ export async function GET() {
     <priority>0.8</priority>
   </url>`
   }
-
+  
   // Tambahkan genre
   for (const genre of genres) {
     xml += `
@@ -73,10 +74,10 @@ export async function GET() {
     <priority>0.6</priority>
   </url>`
   }
-
+  
   xml += `
 </urlset>`
-
+  
   return new NextResponse(xml, {
     headers: {
       'Content-Type': 'application/xml',
