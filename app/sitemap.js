@@ -1,36 +1,41 @@
-import { supabase } from '@/lib/supabaseClient'
-
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
 export default async function sitemap() {
   const baseUrl = 'https://piratestudio.vercel.app'
-  const today = new Date()
+  const supabaseUrl = 'https://eogdtpkiwzlarllnxsrj.supabase.co'
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvZ2R0cGtpd3psYXJsbG54c3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODg0NzMsImV4cCI6MjA4OTY2NDQ3M30.eZPbYTuaDerKL9SOEa4ctkxSlU1PiEAU9l42czgYOyI'
   
-  // Ambil semua film dari database
-  const { data: films } = await supabase
-    .from('PirateStudio21_DB')
-    .select('id, updated_at')
-    .order('id')
+  let films = []
+  let genres = new Set()
   
-  // Ambil semua genre unik
-  const { data: genreData } = await supabase
-    .from('PirateStudio21_DB')
-    .select('genre')
-  
-  const genres = new Set()
-  if (genreData) {
-    genreData.forEach(film => {
-      if (film.genre) {
-        film.genre.split(',').forEach(g => {
-          const trimmed = g.trim()
-          if (trimmed) genres.add(trimmed)
-        })
+  try {
+    // Ambil data film
+    const filmRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=id,updated_at,genre`, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`
       }
     })
+    
+    if (filmRes.ok) {
+      const data = await filmRes.json()
+      films = data
+      
+      // Ambil genre unik
+      data.forEach(film => {
+        if (film.genre) {
+          film.genre.split(',').forEach(g => {
+            const trimmed = g.trim()
+            if (trimmed) genres.add(trimmed)
+          })
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Error fetching data for sitemap:', error)
   }
   
-  // URL statis (homepage)
+  const today = new Date()
+  
+  // URL statis
   const routes = [
     {
       url: baseUrl,
@@ -40,15 +45,15 @@ export default async function sitemap() {
     },
   ]
   
-  // URL film dinamis
-  const filmRoutes = (films || []).map((film) => ({
+  // URL film
+  const filmRoutes = films.map((film) => ({
     url: `${baseUrl}/play/${film.id}`,
     lastModified: film.updated_at ? new Date(film.updated_at) : today,
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
   
-  // URL genre dinamis
+  // URL genre
   const genreRoutes = Array.from(genres).map((genre) => ({
     url: `${baseUrl}/?genre=${encodeURIComponent(genre)}`,
     lastModified: today,
