@@ -1,14 +1,20 @@
 import { supabase } from '@/lib/supabaseClient'
 import HomeClient from '@/components/home/HomeClient'
 
-async function getFilmsByGenre(genre, limit = 10, offset = 0) {
+async function getFilmsByGenre(genre, limit = 10, offset = 0, sort = 'update') {
   let query = supabase
     .from('PirateStudio21_DB')
     .select('*')
-    .order('year', { ascending: false })
   
   if (genre && genre !== '') {
     query = query.ilike('genre', `%${genre}%`)
+  }
+  
+  // Sorting
+  if (sort === 'update') {
+    query = query.order('updated_at', { ascending: false, nullsFirst: false })
+  } else {
+    query = query.order('year', { ascending: false })
   }
   
   const { data } = await query.range(offset, offset + limit - 1)
@@ -41,6 +47,7 @@ async function getPopular() {
     .from('PirateStudio21_DB')
     .select('*')
     .eq('popular', true)
+    .order('updated_at', { ascending: false })
     .limit(10)
   return data || []
 }
@@ -71,7 +78,7 @@ export default async function Home({ searchParams }) {
   const activeGenre = genre || ''
   
   const [initialFilms, totalFilms, featured, popular, allGenres] = await Promise.all([
-    getFilmsByGenre(activeGenre, 10, 0),
+    getFilmsByGenre(activeGenre, 10, 0, 'update'), // default sort by update
     getFilmsCount(activeGenre),
     getFeatured(),
     getPopular(),
