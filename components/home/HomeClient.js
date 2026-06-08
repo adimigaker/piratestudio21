@@ -95,15 +95,15 @@ function FilmCard({ film }) {
       tabIndex={0}
     >
       <img src={film.poster || '/placeholder.jpg'} alt={film.title} loading="lazy" />
-      
+
       {/* Genre Badge - kiri atas */}
       {genreBadge && (
         <div className="card-badge">{genreBadge}</div>
       )}
-      
+
       {/* Type Badge - kanan atas */}
       <div className="card-type">{type}</div>
-      
+
       {/* Rating Badge - kanan bawah */}
       {film.rating && (
         <div className="card-rating">
@@ -113,16 +113,16 @@ function FilmCard({ film }) {
           {film.rating}
         </div>
       )}
-      
+
       {/* Overlay */}
       <div className="card-overlay"></div>
-      
+
       {/* Info Bottom - kiri bawah */}
       <div className="card-info-bottom">
         <div className="card-title">{film.title}</div>
         <div className="card-year">{film.year || ''}</div>
       </div>
-      
+
       {/* Hover effect */}
       <div className="card-hover">
         <div className="card-play-btn">
@@ -211,7 +211,7 @@ function SectionHeader({ title, icon, count, sortType, onToggleSort }) {
       <h2 className="section-title">
         {IconComponent && <IconComponent />} {title}
       </h2>
-      
+
       {/* Tombol toggle sort untuk section Terbaru */}
       {title === "Terbaru" && (
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -257,7 +257,7 @@ function SectionHeader({ title, icon, count, sortType, onToggleSort }) {
           </button>
         </div>
       )}
-      
+
       {count && <span className="section-count">{count} film</span>}
     </div>
   )
@@ -385,7 +385,7 @@ export default function HomeClient({
 
         {popularFilms && popularFilms.length > 0 && (
           <section className="section">
-            <SectionHeader title="Terpopuler" icon="fire" count={popularFilms.length} />
+            <SectionHeader title="Terpopuler" icon="fire" />
             <div className="film-grid grid-6">
               {popularFilms.map((film) => (
                 <FilmCard key={film.id} film={film} />
