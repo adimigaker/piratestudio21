@@ -3,36 +3,215 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
-// SVG Icons (sama seperti sebelumnya, tambahkan icon untuk toggle)
+// SVG Icons
 const Icons = {
-  // ... (icons yang sudah ada)
-  calendar: () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-      <line x1="16" y1="2" x2="16" y2="6"/>
-      <line x1="8" y1="2" x2="8" y2="6"/>
-      <line x1="3" y1="10" x2="21" y2="10"/>
+  star: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
     </svg>
   ),
-  refresh: () => (
+  clock: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  ),
+  fire: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+    </svg>
+  ),
+  film: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+      <line x1="7" y1="2" x2="7" y2="22"/>
+      <line x1="17" y1="2" x2="17" y2="22"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="2" y1="7" x2="7" y2="7"/>
+      <line x1="2" y1="17" x2="7" y2="17"/>
+      <line x1="17" y1="7" x2="22" y2="7"/>
+      <line x1="17" y1="17" x2="22" y2="17"/>
+    </svg>
+  ),
+  genre: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+      <line x1="7" y1="2" x2="7" y2="22"/>
+      <line x1="17" y1="2" x2="17" y2="22"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="2" y1="7" x2="7" y2="7"/>
+      <line x1="2" y1="17" x2="7" y2="17"/>
+      <line x1="17" y1="7" x2="22" y2="7"/>
+      <line x1="17" y1="17" x2="22" y2="17"/>
+    </svg>
+  ),
+  play: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="23 4 23 10 17 10"/>
-      <polyline points="1 20 1 14 7 14"/>
-      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/>
-      <path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  ),
+  info: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+  ),
+  spinner: () => (
+    <div className="spinner-lg"></div>
+  ),
+  check: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
     </svg>
   )
 }
 
 function FilmCard({ film }) {
-  // ... kode FilmCard sama seperti sebelumnya
+  const genres = film.genre ? film.genre.split(',').map(g => g.trim()) : []
+  const genreBadge = genres[0] || ''
+  const type = film.type === 'series' ? 'SERIES' : 'MOVIE'
+  
+  // Cek apakah film diupdate dalam 7 hari terakhir
+  const isNew = () => {
+    if (!film.updated_at) return false
+    const updated = new Date(film.updated_at)
+    const now = new Date()
+    const diffDays = (now - updated) / (1000 * 60 * 60 * 24)
+    return diffDays <= 7
+  }
+
+  return (
+    <a 
+      href={`/play/${film.id}`} 
+      className="film-card"
+      tabIndex={0}
+    >
+      <img src={film.poster || '/placeholder.jpg'} alt={film.title} loading="lazy" />
+      
+      {/* Badge NEW untuk konten yang baru diupdate */}
+      {isNew() && (
+        <div style={{
+          position: 'absolute',
+          top: '8px',
+          left: '8px',
+          background: '#e50914',
+          color: '#fff',
+          padding: '3px 8px',
+          fontSize: '0.6rem',
+          fontWeight: 'bold',
+          borderRadius: '4px',
+          zIndex: 6,
+          letterSpacing: '1px'
+        }}>
+          NEW
+        </div>
+      )}
+      
+      {/* Genre Badge - hanya tampil jika tidak ada badge NEW */}
+      {genreBadge && !isNew() && (
+        <div className="card-badge">{genreBadge}</div>
+      )}
+      
+      {/* Type Badge - kanan atas */}
+      <div className="card-type">{type}</div>
+      
+      {/* Rating Badge */}
+      {film.rating && (
+        <div className="card-rating">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          {film.rating}
+        </div>
+      )}
+      
+      {/* Overlay */}
+      <div className="card-overlay"></div>
+      
+      {/* Info Bottom */}
+      <div className="card-info-bottom">
+        <div className="card-title">{film.title}</div>
+        <div className="card-year">{film.year || ''}</div>
+      </div>
+      
+      {/* Hover effect */}
+      <div className="card-hover">
+        <div className="card-play-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </div>
+        <div className="card-hover-title">{film.title}</div>
+        <div className="card-hover-meta">
+          <span>{film.year || '—'}</span>
+          {film.rating && (
+            <>
+              <span>•</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                {film.rating}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    </a>
+  )
 }
 
 function HeroSection({ film }) {
-  // ... kode HeroSection sama
+  if (!film) return null
+
+  const genres = film.genre ? film.genre.split(',').map(g => g.trim()) : []
+  const backdrop = film.backdrop || film.poster || ''
+
+  return (
+    <section className="hero">
+      <div className="hero-bg" style={{ backgroundImage: `url('${backdrop}')` }}></div>
+      <div className="hero-overlay"></div>
+      <div className="hero-content">
+        <div className="hero-badge">
+          <span className="hero-badge-dot"></span>
+          <Icons.film /> Featured
+        </div>
+        <h1 className="hero-title">{film.title}</h1>
+        <div className="hero-meta">
+          <span className="hero-year">{film.year || '—'}</span>
+          {film.rating && (
+            <span className="hero-rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              {film.rating}
+            </span>
+          )}
+          {genres.slice(0, 3).map((g, i) => (
+            <span key={i} className="hero-genre">{g}</span>
+          ))}
+          <span className="hero-genre" style={{ opacity: 0.6 }}>
+            {(film.type || 'movie').toUpperCase()}
+          </span>
+        </div>
+        <p className="hero-desc">
+          {film.synopsis ? film.synopsis.substring(0, 180) + '...' : ''}
+        </p>
+        <div className="hero-actions">
+          <a href={`/play/${film.id}`} className="btn btn-primary" tabIndex={0}>
+            <Icons.play /> Tonton Sekarang
+          </a>
+          <a href={`/play/${film.id}`} className="btn btn-secondary" tabIndex={0}>
+            <Icons.info /> Info Lebih
+          </a>
+        </div>
+      </div>
+    </section>
+  )
 }
 
-function SectionHeader({ title, icon, count, sortType, onToggleSort }) {
+function SectionHeader({ title, icon, count }) {
   let IconComponent = null
   if (icon === 'star') IconComponent = Icons.star
   else if (icon === 'clock') IconComponent = Icons.clock
@@ -44,53 +223,6 @@ function SectionHeader({ title, icon, count, sortType, onToggleSort }) {
       <h2 className="section-title">
         {IconComponent && <IconComponent />} {title}
       </h2>
-      
-      {/* Tombol toggle sort untuk section Terbaru */}
-      {title === "Terbaru" && (
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            onClick={() => onToggleSort('year')}
-            className={`sort-btn ${sortType === 'year' ? 'active' : ''}`}
-            style={{
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              background: sortType === 'year' ? 'var(--accent)' : 'var(--surface)',
-              border: '1px solid var(--border)',
-              color: sortType === 'year' ? '#fff' : 'var(--text2)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            <Icons.calendar /> Tahun
-          </button>
-          <button
-            onClick={() => onToggleSort('update')}
-            className={`sort-btn ${sortType === 'update' ? 'active' : ''}`}
-            style={{
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              background: sortType === 'update' ? 'var(--accent)' : 'var(--surface)',
-              border: '1px solid var(--border)',
-              color: sortType === 'update' ? '#fff' : 'var(--text2)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            <Icons.refresh /> Update
-          </button>
-        </div>
-      )}
-      
       {count && <span className="section-count">{count} film</span>}
     </div>
   )
@@ -121,8 +253,7 @@ export default function HomeClient({
   const [hasMore, setHasMore] = useState(initialFilms.length < totalFilms)
   const [activeGenre, setActiveGenre] = useState(initialGenre || '')
   const [genres] = useState(initialGenres)
-  const [sortType, setSortType] = useState('update') // 'update' atau 'year'
-  
+
   const observerRef = useRef()
   const lastFilmRef = useCallback(node => {
     if (loading) return
@@ -135,45 +266,14 @@ export default function HomeClient({
     if (node) observerRef.current.observe(node)
   }, [loading, hasMore, activeGenre])
 
-  // Load sort preference from localStorage
-  useEffect(() => {
-    const savedSort = localStorage.getItem('ps21_sort_preference')
-    if (savedSort === 'year' || savedSort === 'update') {
-      setSortType(savedSort)
-      // Refetch films with new sort
-      fetchFilmsWithSort(savedSort, 0)
-    }
-  }, [])
-
-  const fetchFilmsWithSort = async (sort, newOffset = 0) => {
-    setLoading(true)
-    try {
-      const response = await fetch(`/api/films?offset=${newOffset}&limit=12&sort=${sort}`)
-      const newFilms = await response.json()
-      setFilms(newFilms)
-      setOffset(newFilms.length)
-      setHasMore(newFilms.length === 12)
-    } catch (error) {
-      console.error('Error fetching films:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleToggleSort = (type) => {
-    setSortType(type)
-    localStorage.setItem('ps21_sort_preference', type)
-    fetchFilmsWithSort(type, 0)
-  }
-
   const loadMoreFilms = async () => {
     if (loading || !hasMore || activeGenre) return
-    
+
     setLoading(true)
     try {
-      const response = await fetch(`/api/films?offset=${offset}&limit=10&sort=${sortType}`)
+      const response = await fetch(`/api/films?offset=${offset}&limit=10`)
       const newFilms = await response.json()
-      
+
       if (newFilms.length > 0) {
         setFilms(prev => [...prev, ...newFilms])
         setOffset(prev => prev + newFilms.length)
@@ -191,13 +291,13 @@ export default function HomeClient({
   const filterByGenre = (genre) => {
     const currentScrollY = window.scrollY
     setActiveGenre(genre)
-    
+
     if (genre === '') {
       router.push(pathname, { scroll: false })
     } else {
       router.push(`/?genre=${encodeURIComponent(genre)}`, { scroll: false })
     }
-    
+
     setTimeout(() => {
       window.scrollTo(0, currentScrollY)
     }, 50)
@@ -213,10 +313,9 @@ export default function HomeClient({
   return (
     <>
       <HeroSection film={featuredFilm} />
-      
+
       <div className="container">
-        
-        {/* Popular Section */}
+
         {popularFilms && popularFilms.length > 0 && (
           <section className="section">
             <SectionHeader title="Terpopuler" icon="fire" count={popularFilms.length} />
@@ -227,8 +326,7 @@ export default function HomeClient({
             </div>
           </section>
         )}
-        
-        {/* Genre Tags */}
+
         <div className="genre-tags">
           <span className="genre-label"><Icons.genre /> Genre:</span>
           <button 
@@ -249,14 +347,12 @@ export default function HomeClient({
             </button>
           ))}
         </div>
-        
-        {/* Film Grid */}
+
         <section className="section">
           <SectionHeader 
-            title="Terbaru" 
-            icon="clock"
-            sortType={sortType}
-            onToggleSort={handleToggleSort}
+            title={activeGenre ? `Genre: ${activeGenre}` : "Terbaru"} 
+            icon={activeGenre ? "film" : "clock"}
+            count={activeGenre ? films.length : totalFilms} 
           />
           <div className="film-grid">
             {films.map((film, index) => (
@@ -268,16 +364,16 @@ export default function HomeClient({
               </div>
             ))}
           </div>
-          
+
           {loading && <LoadingSpinner />}
-          
-          {!hasMore && !activeGenre && films.length > 0 && (
+
+          {!hasMore && !activeGenre && films.length > 0 && films.length >= totalFilms && (
             <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
               <Icons.check /> Semua film sudah ditampilkan
             </p>
           )}
         </section>
-        
+
         {films.length === 0 && (
           <p style={{ textAlign: 'center', padding: '40px' }}>
             Tidak ada film dalam genre ini.
