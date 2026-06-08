@@ -71,6 +71,15 @@ function FilmCard({ film }) {
   const genres = film.genre ? film.genre.split(',').map(g => g.trim()) : []
   const genreBadge = genres[0] || ''
   const type = film.type === 'series' ? 'SERIES' : 'MOVIE'
+  
+  // Cek apakah film diupdate dalam 7 hari terakhir
+  const isNew = () => {
+    if (!film.updated_at) return false
+    const updated = new Date(film.updated_at)
+    const now = new Date()
+    const diffDays = (now - updated) / (1000 * 60 * 60 * 24)
+    return diffDays <= 7
+  }
 
   return (
     <a 
@@ -79,13 +88,35 @@ function FilmCard({ film }) {
       tabIndex={0}
     >
       <img src={film.poster || '/placeholder.jpg'} alt={film.title} loading="lazy" />
-
-      {genreBadge && (
+      
+      {/* Badge NEW untuk konten yang baru diupdate */}
+      {isNew() && (
+        <div style={{
+          position: 'absolute',
+          top: '8px',
+          left: '8px',
+          background: '#e50914',
+          color: '#fff',
+          padding: '3px 8px',
+          fontSize: '0.6rem',
+          fontWeight: 'bold',
+          borderRadius: '4px',
+          zIndex: 6,
+          letterSpacing: '1px'
+        }}>
+          NEW
+        </div>
+      )}
+      
+      {/* Genre Badge - hanya tampil jika tidak ada badge NEW */}
+      {genreBadge && !isNew() && (
         <div className="card-badge">{genreBadge}</div>
       )}
-
+      
+      {/* Type Badge - kanan atas */}
       <div className="card-type">{type}</div>
-
+      
+      {/* Rating Badge */}
       {film.rating && (
         <div className="card-rating">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
@@ -94,14 +125,17 @@ function FilmCard({ film }) {
           {film.rating}
         </div>
       )}
-
+      
+      {/* Overlay */}
       <div className="card-overlay"></div>
-
+      
+      {/* Info Bottom */}
       <div className="card-info-bottom">
         <div className="card-title">{film.title}</div>
         <div className="card-year">{film.year || ''}</div>
       </div>
-
+      
+      {/* Hover effect */}
       <div className="card-hover">
         <div className="card-play-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -335,7 +369,7 @@ export default function HomeClient({
 
           {!hasMore && !activeGenre && films.length > 0 && films.length >= totalFilms && (
             <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-              <Icons.check /> Semua {totalFilms} film sudah ditampilkan
+              <Icons.check /> Semua film sudah ditampilkan
             </p>
           )}
         </section>
