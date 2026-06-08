@@ -64,6 +64,22 @@ const Icons = {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
+  ),
+  calendar: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+  ),
+  refresh: () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10"/>
+      <polyline points="1 20 1 14 7 14"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/>
+      <path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
   )
 }
 
@@ -71,15 +87,6 @@ function FilmCard({ film }) {
   const genres = film.genre ? film.genre.split(',').map(g => g.trim()) : []
   const genreBadge = genres[0] || ''
   const type = film.type === 'series' ? 'SERIES' : 'MOVIE'
-  
-  // Cek apakah film diupdate dalam 7 hari terakhir
-  const isNew = () => {
-    if (!film.updated_at) return false
-    const updated = new Date(film.updated_at)
-    const now = new Date()
-    const diffDays = (now - updated) / (1000 * 60 * 60 * 24)
-    return diffDays <= 7
-  }
 
   return (
     <a 
@@ -89,34 +96,15 @@ function FilmCard({ film }) {
     >
       <img src={film.poster || '/placeholder.jpg'} alt={film.title} loading="lazy" />
       
-      {/* Badge NEW untuk konten yang baru diupdate */}
-      {isNew() && (
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          left: '8px',
-          background: '#e50914',
-          color: '#fff',
-          padding: '3px 8px',
-          fontSize: '0.6rem',
-          fontWeight: 'bold',
-          borderRadius: '4px',
-          zIndex: 6,
-          letterSpacing: '1px'
-        }}>
-          NEW
-        </div>
-      )}
-      
-      {/* Genre Badge - hanya tampil jika tidak ada badge NEW */}
-      {genreBadge && !isNew() && (
+      {/* Genre Badge - kiri atas */}
+      {genreBadge && (
         <div className="card-badge">{genreBadge}</div>
       )}
       
       {/* Type Badge - kanan atas */}
       <div className="card-type">{type}</div>
       
-      {/* Rating Badge */}
+      {/* Rating Badge - kanan bawah */}
       {film.rating && (
         <div className="card-rating">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)">
@@ -129,7 +117,7 @@ function FilmCard({ film }) {
       {/* Overlay */}
       <div className="card-overlay"></div>
       
-      {/* Info Bottom */}
+      {/* Info Bottom - kiri bawah */}
       <div className="card-info-bottom">
         <div className="card-title">{film.title}</div>
         <div className="card-year">{film.year || ''}</div>
@@ -211,7 +199,7 @@ function HeroSection({ film }) {
   )
 }
 
-function SectionHeader({ title, icon, count }) {
+function SectionHeader({ title, icon, count, sortType, onToggleSort }) {
   let IconComponent = null
   if (icon === 'star') IconComponent = Icons.star
   else if (icon === 'clock') IconComponent = Icons.clock
@@ -223,6 +211,53 @@ function SectionHeader({ title, icon, count }) {
       <h2 className="section-title">
         {IconComponent && <IconComponent />} {title}
       </h2>
+      
+      {/* Tombol toggle sort untuk section Terbaru */}
+      {title === "Terbaru" && (
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            onClick={() => onToggleSort('year')}
+            className={`sort-btn ${sortType === 'year' ? 'active' : ''}`}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '20px',
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              background: sortType === 'year' ? 'var(--accent)' : 'var(--surface)',
+              border: '1px solid var(--border)',
+              color: sortType === 'year' ? '#fff' : 'var(--text2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Icons.calendar /> Tahun
+          </button>
+          <button
+            onClick={() => onToggleSort('update')}
+            className={`sort-btn ${sortType === 'update' ? 'active' : ''}`}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '20px',
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              background: sortType === 'update' ? 'var(--accent)' : 'var(--surface)',
+              border: '1px solid var(--border)',
+              color: sortType === 'update' ? '#fff' : 'var(--text2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Icons.refresh /> Update
+          </button>
+        </div>
+      )}
+      
       {count && <span className="section-count">{count} film</span>}
     </div>
   )
@@ -253,6 +288,7 @@ export default function HomeClient({
   const [hasMore, setHasMore] = useState(initialFilms.length < totalFilms)
   const [activeGenre, setActiveGenre] = useState(initialGenre || '')
   const [genres] = useState(initialGenres)
+  const [sortType, setSortType] = useState('update') // 'update' atau 'year'
 
   const observerRef = useRef()
   const lastFilmRef = useCallback(node => {
@@ -266,12 +302,42 @@ export default function HomeClient({
     if (node) observerRef.current.observe(node)
   }, [loading, hasMore, activeGenre])
 
+  // Load sort preference from localStorage
+  useEffect(() => {
+    const savedSort = localStorage.getItem('ps21_sort_preference')
+    if (savedSort === 'year' || savedSort === 'update') {
+      setSortType(savedSort)
+      fetchFilmsWithSort(savedSort, 0)
+    }
+  }, [])
+
+  const fetchFilmsWithSort = async (sort, newOffset = 0) => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/films?offset=${newOffset}&limit=12&sort=${sort}`)
+      const newFilms = await response.json()
+      setFilms(newFilms)
+      setOffset(newFilms.length)
+      setHasMore(newFilms.length === 12)
+    } catch (error) {
+      console.error('Error fetching films:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleToggleSort = (type) => {
+    setSortType(type)
+    localStorage.setItem('ps21_sort_preference', type)
+    fetchFilmsWithSort(type, 0)
+  }
+
   const loadMoreFilms = async () => {
     if (loading || !hasMore || activeGenre) return
 
     setLoading(true)
     try {
-      const response = await fetch(`/api/films?offset=${offset}&limit=10`)
+      const response = await fetch(`/api/films?offset=${offset}&limit=10&sort=${sortType}`)
       const newFilms = await response.json()
 
       if (newFilms.length > 0) {
@@ -308,6 +374,7 @@ export default function HomeClient({
     setOffset(initialFilms.length)
     setHasMore(initialFilms.length < totalFilms)
     setActiveGenre(initialGenre || '')
+    setSortType('update')
   }, [initialFilms, totalFilms, initialGenre])
 
   return (
@@ -350,9 +417,10 @@ export default function HomeClient({
 
         <section className="section">
           <SectionHeader 
-            title={activeGenre ? `Genre: ${activeGenre}` : "Terbaru"} 
-            icon={activeGenre ? "film" : "clock"}
-            count={activeGenre ? films.length : totalFilms} 
+            title="Terbaru"
+            icon="clock"
+            sortType={sortType}
+            onToggleSort={handleToggleSort}
           />
           <div className="film-grid">
             {films.map((film, index) => (
@@ -367,7 +435,7 @@ export default function HomeClient({
 
           {loading && <LoadingSpinner />}
 
-          {!hasMore && !activeGenre && films.length > 0 && films.length >= totalFilms && (
+          {!hasMore && !activeGenre && films.length > 0 && (
             <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
               <Icons.check /> Semua film sudah ditampilkan
             </p>
