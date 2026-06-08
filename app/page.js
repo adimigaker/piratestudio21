@@ -10,7 +10,7 @@ async function getFilmsByGenre(genre, limit = 10, offset = 0, sort = 'update') {
     query = query.ilike('genre', `%${genre}%`)
   }
   
-  // Sorting
+  // Sorting berdasarkan pilihan
   if (sort === 'update') {
     query = query.order('updated_at', { ascending: false, nullsFirst: false })
   } else {
@@ -78,7 +78,7 @@ export default async function Home({ searchParams }) {
   const activeGenre = genre || ''
   
   const [initialFilms, totalFilms, featured, popular, allGenres] = await Promise.all([
-    getFilmsByGenre(activeGenre, 10, 0, 'update'), // default sort by update
+    getFilmsByGenre(activeGenre, 10, 0, 'update'),
     getFilmsCount(activeGenre),
     getFeatured(),
     getPopular(),
