@@ -3,17 +3,50 @@ import Footer from '@/components/Footer'
 import '../styles/style.css'
 import '../styles/player.css'
 
+export const metadata = {
+  title: {
+    default: 'Pirate Studio 21 - Streaming Film & Series Sub Indo',
+    template: '%s | Pirate Studio 21'
+  },
+  description: 'Nonton streaming film dan series subtitle Indonesia gratis. Koleksi film terbaru dan terlengkap.',
+  keywords: ['ps21', 'nonton film', 'streaming film', 'anime streaming', 'movie download', 'bioskop online', 'sub indo', 'nonton anime gratis'],
+  authors: [{ name: 'Pirate Studio 21' }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  openGraph: {
+    title: 'Pirate Studio 21 - Streaming Film & Series Sub Indo',
+    description: 'Nonton streaming film dan series subtitle Indonesia gratis.',
+    url: 'https://piratestudio.vercel.app',
+    siteName: 'Pirate Studio 21',
+    type: 'website',
+    locale: 'id_ID',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pirate Studio 21 - Streaming Film & Series Sub Indo',
+    description: 'Nonton streaming film dan series subtitle Indonesia gratis.',
+  },
+  verification: {
+    google: 'MGlj5YVjzcRN6hU1NnHgYYWAoZZPYWRctBZr0AJ8kA4', // Ganti dengan kode verifikasi Google Anda
+  },
+  alternates: {
+    canonical: 'https://piratestudio.vercel.app',
+  },
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="id">
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Pirate Studio 21 - Streaming Film & Series</title>
-        <meta name="description" content="Nonton streaming film dan series subtitle Indonesia gratis." />
-        <meta name="keywords" content="ps21, nonton film, streaming film, anime streaming, movie download, bioskop online" />
-        <meta name="author" content="Pirate Studio 21" />
-        <meta name="robots" content="index, follow" />
+        <meta name="theme-color" content="#0a0a0f" />
         
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 
@@ -34,7 +67,6 @@ export default function RootLayout({ children }) {
         <link rel="manifest" href="/manifest.json" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
 
         {/* JSON-LD Schema untuk Website */}
         <script
