@@ -22,9 +22,8 @@ export async function generateMetadata({ params }) {
     }
   }
   
-  // Format title yang SEO friendly
   const title = `${film.title} - Sub Indo | Pirate Studio 21`
-  const description = film.synopsis ? film.synopsis.substring(0, 155) : `Nonton streaming ${film.title} subtitle Indonesia. ${film.genre} terbaru.`
+  const description = film.synopsis ? film.synopsis.substring(0, 155) : `Nonton streaming ${film.title} subtitle Indonesia.`
   
   return {
     title: title,
@@ -36,7 +35,7 @@ export async function generateMetadata({ params }) {
       url: `https://piratestudio.vercel.app/play/${film.id}`,
       images: film.poster ? [film.poster] : [],
     },
-    keywords: `${film.title}, nonton ${film.title}, streaming ${film.title}, download ${film.title}, sub indo, ${film.genre}`,
+    keywords: `${film.title}, nonton ${film.title}, streaming ${film.title}, download ${film.title}, sub indo`,
   }
 }
 
@@ -48,7 +47,6 @@ export default async function PlayPage({ params }) {
     notFound()
   }
 
-  // JSON-LD Schema untuk Movie/Series
   const schemaData = {
     "@context": "https://schema.org",
     "@type": film.type === 'series' ? "TVSeries" : "Movie",
@@ -61,7 +59,8 @@ export default async function PlayPage({ params }) {
       "@type": "AggregateRating",
       "ratingValue": film.rating,
       "bestRating": "10",
-      "worstRating": "1"
+      "worstRating": "1",
+      "ratingCount": 1  // ← DITAMBAHKAN
     } : undefined,
     "duration": film.duration || undefined,
     "director": film.director ? {
