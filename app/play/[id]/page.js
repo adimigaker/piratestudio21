@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
     }
   }
   
-  const title = `${film.title} - Sub Indo | Pirate Studio 21`
+  const title = `${film.title} - Sub Indonesia | Streaming & Download Gratis`
   const description = film.synopsis ? film.synopsis.substring(0, 155) : `Nonton streaming ${film.title} subtitle Indonesia.`
   
   return {
