@@ -354,28 +354,29 @@ export default function PlayerClient({ film }) {
               </div>
             )}
 
-            {(film.director || film.cast) && (
-              <div className="info-more">
-				  {film.studio && (
-				    <div className="info-more-item">
-				      <span className="info-more-label">Studio</span>
-				      <span className="info-more-value">{film.studio}</span>
-				    </div>
-				  )}
-				  {film.director && (
-				    <div className="info-more-item">
-				      <span className="info-more-label">Sutradara</span>
-				      <span className="info-more-value">{film.director}</span>
-				    </div>
-				  )}
-				  {film.cast && (
-				    <div className="info-more-item">
-				      <span className="info-more-label">Pemeran</span>
-				      <span className="info-more-value">{film.cast.split(',').slice(0, 3).join(', ')}</span>
-				    </div>
-				  )}
-				</div>
-            )}
+            {/* Studio, Sutradara, Pemeran - hanya tampil jika minimal satu data ada */}
+			{(film.studio || film.director || film.cast) && (
+			  <div className="info-more">
+			    {film.studio && (
+			      <div className="info-more-item">
+			        <span className="info-more-label">Studio</span>
+			        <span className="info-more-value">{film.studio}</span>
+			      </div>
+			    )}
+			    {film.director && (
+			      <div className="info-more-item">
+			        <span className="info-more-label">Sutradara</span>
+ 			       <span className="info-more-value">{film.director}</span>
+			      </div>
+			    )}
+			    {film.cast && (
+ 			     <div className="info-more-item">
+			        <span className="info-more-label">Pemeran</span>
+			        <span className="info-more-value">{film.cast.split(',').slice(0, 3).join(', ')}</span>
+			      </div>
+			    )}
+			  </div>
+			)}
           </div>
         </div>
 
