@@ -14,17 +14,17 @@ async function getFilm(id) {
 export async function generateMetadata({ params }) {
   const { id } = await params
   const film = await getFilm(id)
-  
+
   if (!film) {
     return {
       title: 'Film Tidak Ditemukan - Pirate Studio 21',
       description: 'Film yang Anda cari tidak tersedia.'
     }
   }
-  
+
   const title = `${film.title} - Sub Indonesia | Streaming & Download Gratis`
   const description = film.synopsis ? film.synopsis.substring(0, 155) : `Nonton streaming ${film.title} subtitle Indonesia.`
-  
+
   return {
     title: title,
     description: description,
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
 export default async function PlayPage({ params }) {
   const { id } = await params
   const film = await getFilm(id)
-  
+
   if (!film) {
     notFound()
   }
@@ -66,7 +66,11 @@ export default async function PlayPage({ params }) {
     "director": film.director ? {
       "@type": "Person",
       "name": film.director
-    } : undefined
+    } : undefined,
+    "productionCompany": film.studio ? {
+	  "@type": "Organization",
+	  "name": film.studio
+	} : undefined
   }
 
   return (
