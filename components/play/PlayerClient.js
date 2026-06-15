@@ -328,10 +328,10 @@ export default function PlayerClient({ film }) {
             className="info-poster" 
             onError={(e) => { e.target.style.background = '#1a1a24'; e.target.style.objectFit = 'contain'; }}
           />
-          
+
           <div className="info-details">
             <h1 className="info-title">{film.title} ({film.year})</h1>
-            
+
             <div className="info-meta">
               <span className="info-year">{film.year || '—'}</span>
               {film.rating && (
@@ -345,7 +345,7 @@ export default function PlayerClient({ film }) {
                 </span>
               )}
             </div>
-            
+
             {film.genre && (
               <div className="info-genres">
                 {film.genre.split(',').map((g, i) => (
@@ -354,6 +354,13 @@ export default function PlayerClient({ film }) {
               </div>
             )}
             
+            {film.studio && (
+			  <div className="info-more-item">
+			    <span className="info-more-label">Studio</span>
+			    <span className="info-more-value">{film.studio}</span>
+			  </div>
+			)}
+
             {(film.director || film.cast) && (
               <div className="info-more">
                 {film.director && (
@@ -372,14 +379,14 @@ export default function PlayerClient({ film }) {
             )}
           </div>
         </div>
-        
+
         {film.synopsis && (
           <div className="info-synopsis">
             <div className="info-synopsis-label">Sinopsis</div>
             <p dangerouslySetInnerHTML={{ __html: film.synopsis }} />
           </div>
         )}
-        
+
         {!isTrailer && (
           <div className="action-buttons" style={{ marginTop: '20px', marginBottom: '30px' }}>
             {hasValidUrl(getCurrentDownloadUrl()) && (
@@ -404,7 +411,7 @@ export default function PlayerClient({ film }) {
             )}
           </div>
         )}
-        
+
         <div className="comments-section">
           <div className="comments-title">
             <Icons.comment /> Komentar
