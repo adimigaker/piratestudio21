@@ -176,7 +176,7 @@ function HeroSection({ film }) {
               {film.rating}
             </span>
           )}
-          {genres.slice(0, 3).map((g, i) => (
+          {genres.slice(0, 5).map((g, i) => (
             <span key={i} className="hero-genre">{g}</span>
           ))}
           <span className="hero-genre" style={{ opacity: 0.6 }}>
