@@ -403,7 +403,7 @@ export default function HomeClient({
           >
             Semua
           </button>
-          {genres.slice(0, 12).map((g) => (
+          {genres.map((g) => (
             <button
               key={g}
               className={`genre-tag ${activeGenre === g ? 'active' : ''}`}
