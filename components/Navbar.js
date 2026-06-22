@@ -1,33 +1,33 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [showDropdown, setShowDropdown] = useState(false)
 
   const handleSearch = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
+    const query = e.target.value
+    setSearchQuery(query)
     
     if (query.length >= 2) {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      setSearchResults(data.slice(0, 6));
-      setShowDropdown(true);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      const data = await res.json()
+      setSearchResults(data.slice(0, 6))
+      setShowDropdown(true)
     } else {
-      setShowDropdown(false);
+      setShowDropdown(false)
     }
-  };
+  }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
-      router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`)
     }
-  };
+  }
 
   return (
     <nav className="navbar" id="navbar">
@@ -42,19 +42,18 @@ export default function Navbar() {
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input 
-            type="text" 
-            className="search-input"
-            placeholder="Cari judul film..." 
-            value={searchQuery}
-            onChange={handleSearch}
-            onKeyDown={handleKeyDown}
-            tabIndex={0}
+          type="text" 
+          className="search-input"
+          placeholder="Cari judul film..." 
+          value={searchQuery}
+          onChange={handleSearch}
+          onKeyDown={handleKeyDown}
         />
         
         {showDropdown && searchResults.length > 0 && (
           <div className="search-dropdown show">
             {searchResults.map((film) => (
-              <a key={film.id} href={`/play/${film.id}`} className="search-item">
+              <a key={film.id} href={`/play/${film.slug}`} className="search-item">
                 {film.poster && <img src={film.poster} className="search-item-poster" alt={film.title} />}
                 <div className="search-item-info">
                   <div className="search-item-title">{film.title}</div>
@@ -69,5 +68,5 @@ export default function Navbar() {
         )}
       </div>
     </nav>
-  );
+  )
 }
