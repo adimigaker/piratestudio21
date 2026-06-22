@@ -12,8 +12,7 @@ export async function GET() {
   let genres = new Set()
 
   try {
-    // Ambil semua film
-    const filmRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=id,updated_at,genre`, {
+    const filmRes = await fetch(`${supabaseUrl}/rest/v1/PirateStudio21_DB?select=slug,updated_at,genre`, {
       headers: {
         'apikey': supabaseKey,
         'Authorization': `Bearer ${supabaseKey}`
@@ -52,7 +51,7 @@ export async function GET() {
   for (const film of films) {
     xml += `
   <url>
-    <loc>${baseUrl}/play/${film.id}</loc>
+    <loc>${baseUrl}/play/${film.slug}</loc>
     <lastmod>${film.updated_at ? new Date(film.updated_at).toISOString() : now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
