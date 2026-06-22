@@ -90,7 +90,7 @@ function FilmCard({ film }) {
 
   return (
     <a 
-      href={`/play/${film.id}`} 
+      href={`/play/${film.slug}`} 
       className="film-card"
       tabIndex={0}
     >
@@ -187,10 +187,10 @@ function HeroSection({ film }) {
           {film.synopsis ? film.synopsis.substring(0, 180) + '...' : ''}
         </p>
         <div className="hero-actions">
-          <a href={`/play/${film.id}`} className="btn btn-primary" tabIndex={0}>
+          <a href={`/play/${film.slug}`} className="btn btn-primary" tabIndex={0}>
             <Icons.play /> Tonton Sekarang
           </a>
-          <a href={`/play/${film.id}`} className="btn btn-secondary" tabIndex={0}>
+          <a href={`/play/${film.slug}`} className="btn btn-secondary" tabIndex={0}>
             <Icons.info /> Info Lebih
           </a>
         </div>
@@ -212,7 +212,6 @@ function SectionHeader({ title, icon, count, sortType, onToggleSort }) {
         {IconComponent && <IconComponent />} {title}
       </h2>
 
-      {/* Tombol toggle sort untuk section Terbaru */}
       {title === "Terbaru" && (
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
@@ -288,7 +287,7 @@ export default function HomeClient({
   const [hasMore, setHasMore] = useState(initialFilms.length < totalFilms)
   const [activeGenre, setActiveGenre] = useState(initialGenre || '')
   const [genres] = useState(initialGenres)
-  const [sortType, setSortType] = useState('update') // 'update' atau 'year'
+  const [sortType, setSortType] = useState('update')
 
   const observerRef = useRef()
   const lastFilmRef = useCallback(node => {
@@ -302,7 +301,6 @@ export default function HomeClient({
     if (node) observerRef.current.observe(node)
   }, [loading, hasMore, activeGenre])
 
-  // Load sort preference from localStorage
   useEffect(() => {
     const savedSort = localStorage.getItem('ps21_sort_preference')
     if (savedSort === 'year' || savedSort === 'update') {
