@@ -1,18 +1,28 @@
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient'
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const q = searchParams.get('q');
-  
-  if (!q || q.length < 2) {
-    return Response.json([]);
+  const { searchParams } = new URL(request.url)
+  const q = searchParams.get('q')
+
+  if (!q || q.trim() === '') {
+    return Response.json([])
   }
-  
-  const { data } = await supabase
+
+  const searchTerm = `%${q.toLowerCase()}%`
+
+  const { data, error } = await supabase
     .from('PirateStudio21_DB')
-    .select('id, title, year')
-    .ilike('title', `%${q}%`)
-    .limit(10);
-  
-  return Response.json(data || []);
+    .select('id, slug, title, year, poster, type, rating, genre')  // ← PASTIKAN slug DAN type ADA
+    .ilike('title', searchTerm)
+    .limit(10)
+
+  if (error) {
+    console.error('Search API error:', error)
+    return Response.json({ error: error.message }, { status: 500 })
+  }
+
+  // Filter data yang tidak punya slug
+  const validData = data.filter(film => film.slug && film.id)
+
+  return Response.json(validData || [])
 }
