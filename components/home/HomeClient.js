@@ -420,14 +420,9 @@ export default function HomeClient({
             sortType={sortType}
             onToggleSort={handleToggleSort}
           />
-          <div className="film-grid">
+          <div className="film-grid grid-6">
             {films.map((film, index) => (
-              <div
-                key={film.id}
-                ref={index === films.length - 1 ? lastFilmRef : null}
-              >
-                <FilmCard film={film} />
-              </div>
+              <FilmCard key={film.id} film={film} ref={index === films.length - 1 ? lastFilmRef : null} />
             ))}
           </div>
 

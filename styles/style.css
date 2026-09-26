@@ -743,6 +743,7 @@ main {
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--surface);
+    display: block;
     aspect-ratio: 2/3;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     isolation: isolate;
