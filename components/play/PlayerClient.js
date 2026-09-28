@@ -248,13 +248,25 @@ export default function PlayerClient({ film }) {
       <div className="player-wrapper" style={{ marginTop: '8px' }}>
         <div className="player-aspect">
           {activeUrl ? (
-            <iframe 
-              src={activeUrl}
-              width="100%"
-              height="100%"
-              style={{ border: 'none', position: 'absolute', top: 0, left: 0 }}
-              allowFullScreen
-            />
+            activeUrl.includes('/api/media/') || activeUrl.endsWith('.mp4') ? (
+              <video 
+                src={activeUrl}
+                width="100%"
+                height="100%"
+                controls
+                autoPlay
+                playsinline
+                style={{ objectFit: 'contain', background: '#000', position: 'absolute', top: 0, left: 0 }}
+              />
+            ) : (
+              <iframe 
+                src={activeUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 'none', position: 'absolute', top: 0, left: 0 }}
+                allowFullScreen
+              />
+            )
           ) : (
             <div className="player-loading">Embed URL belum tersedia</div>
           )}
