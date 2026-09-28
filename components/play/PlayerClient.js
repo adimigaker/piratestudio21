@@ -256,6 +256,7 @@ export default function PlayerClient({ film }) {
                 controls
                 autoPlay
                 playsinline
+                crossOrigin="anonymous"
                 style={{ objectFit: 'contain', background: '#000', position: 'absolute', top: 0, left: 0 }}
               />
             ) : (
