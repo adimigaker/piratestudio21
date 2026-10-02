@@ -289,67 +289,132 @@ export default function HomeClient({
   const [genres] = useState(initialGenres)
   const [sortType, setSortType] = useState('update')
 
-  const observerRef = useRef()
-  const lastFilmRef = useCallback(node => {
-    if (loading) return
-    if (observerRef.current) observerRef.current.disconnect()
-    observerRef.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !activeGenre) {
-        loadMoreFilms()
-      }
-    })
-    if (node) observerRef.current.observe(node)
-  }, [loading, hasMore, activeGenre])
+  // Sentinel dipantau IntersectionObserver — lebih stabil daripada menempelkan ref
+  // ke komponen FilmCard (ref tidak diteruskan ke <a> di React 19).
+  const sentinelRef = useRef(null)
 
-  useEffect(() => {
-    const savedSort = localStorage.getItem('ps21_sort_preference')
-    if (savedSort === 'year' || savedSort === 'update') {
-      setSortType(savedSort)
-      fetchFilmsWithSort(savedSort, 0)
-    }
-  }, [])
+  // Ref penampung "latest state" supaya callback observer/loader tidak memakai nilai basi.
+  const stateRef = useRef({ offset, sortType, loading, hasMore, activeGenre })
+  stateRef.current = { offset, sortType, loading, hasMore, activeGenre }
+
+  // Kunci request agar tidak ada dua fetch bersamaan (race saat scroll cepat).
+  const lockRef = useRef(false)
 
   const fetchFilmsWithSort = async (sort, newOffset = 0) => {
     setLoading(true)
+    lockRef.current = true
     try {
       const response = await fetch(`/api/films?offset=${newOffset}&limit=12&sort=${sort}`)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const newFilms = await response.json()
       setFilms(newFilms)
-      setOffset(newFilms.length)
+      setOffset(newOffset + newFilms.length)
       setHasMore(newFilms.length === 12)
     } catch (error) {
       console.error('Error fetching films:', error)
     } finally {
+      lockRef.current = false
       setLoading(false)
     }
   }
 
-  const handleToggleSort = (type) => {
-    setSortType(type)
-    localStorage.setItem('ps21_sort_preference', type)
-    fetchFilmsWithSort(type, 0)
-  }
+  const loadMoreFilms = useCallback(async () => {
+    // Baca state terbaru dari ref, bukan dari closure render yang sudah basi.
+    const { offset: curOffset, sortType: curSort, hasMore: curHasMore, activeGenre: curGenre } = stateRef.current
+    if (lockRef.current || !curHasMore || curGenre) return
 
-  const loadMoreFilms = async () => {
-    if (loading || !hasMore || activeGenre) return
-
+    lockRef.current = true
     setLoading(true)
     try {
-      const response = await fetch(`/api/films?offset=${offset}&limit=10&sort=${sortType}`)
+      const response = await fetch(`/api/films?offset=${curOffset}&limit=12&sort=${curSort}`)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const newFilms = await response.json()
 
       if (newFilms.length > 0) {
-        setFilms(prev => [...prev, ...newFilms])
-        setOffset(prev => prev + newFilms.length)
-        setHasMore(newFilms.length === 10)
+        // Buang duplikat bila offset bergeser (mis. ada film baru masuk saat scroll).
+        setFilms(prev => {
+          const seen = new Set(prev.map(f => f.slug || f.id))
+          return [...prev, ...newFilms.filter(f => !seen.has(f.slug || f.id))]
+        })
+        setOffset(curOffset + newFilms.length)
+        setHasMore(newFilms.length === 12)
       } else {
         setHasMore(false)
       }
     } catch (error) {
       console.error('Error loading more films:', error)
     } finally {
+      lockRef.current = false
       setLoading(false)
     }
+  }, [])
+
+  // Satu-satunya tempat IntersectionObserver dibuat — di-mount ulang setiap kali
+  // kondisi berubah, lalu selalu di-disconnect saat unmount.
+  useEffect(() => {
+    const node = sentinelRef.current
+    if (!node || !hasMore || activeGenre || loading) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) loadMoreFilms()
+      },
+      { rootMargin: '600px 0px' }
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [loading, hasMore, activeGenre, loadMoreFilms])
+
+  // Fallback untuk browser/lingkungan yang IntersectionObserver-nya tidak fire
+  // (headless, beberapa WebView lama, mode hemat energi). Memakai listener scroll
+  // + requestAnimationFrame agar tidak membanjiri event.
+  useEffect(() => {
+    const node = sentinelRef.current
+    if (!node || !hasMore || activeGenre) return
+
+    let ticking = false
+    const check = () => {
+      ticking = false
+      const { loading: busy, hasMore: more, activeGenre: genre } = stateRef.current
+      if (busy || !more || genre) return
+      const rect = node.getBoundingClientRect()
+      if (rect.top <= window.innerHeight + 600) loadMoreFilms()
+    }
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(check)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    check() // jangan menunggu scroll pertama bila sentinel sudah terlihat
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [hasMore, activeGenre, loadMoreFilms])
+
+  useEffect(() => {
+    try {
+      const savedSort = localStorage.getItem('ps21_sort_preference')
+      if (savedSort === 'year' || savedSort === 'update') {
+        setSortType(savedSort)
+        fetchFilmsWithSort(savedSort, 0)
+      }
+    } catch {
+      // localStorage tidak tersedia (mis. mode privat) — abaikan saja.
+    }
+  }, [])
+
+  const handleToggleSort = (type) => {
+    if (type === sortType) return
+    setSortType(type)
+    try {
+      localStorage.setItem('ps21_sort_preference', type)
+    } catch {}
+    fetchFilmsWithSort(type, 0)
   }
 
   const filterByGenre = (genre) => {
@@ -372,7 +437,6 @@ export default function HomeClient({
     setOffset(initialFilms.length)
     setHasMore(initialFilms.length < totalFilms)
     setActiveGenre(initialGenre || '')
-    setSortType('update')
   }, [initialFilms, totalFilms, initialGenre])
 
   return (
@@ -421,12 +485,30 @@ export default function HomeClient({
             onToggleSort={handleToggleSort}
           />
           <div className="film-grid grid-6">
-            {films.map((film, index) => (
-              <FilmCard key={film.id} film={film} ref={index === films.length - 1 ? lastFilmRef : null} />
+            {films.map((film) => (
+              <FilmCard key={film.id} film={film} />
             ))}
           </div>
 
+          {/* Sentinel: memicu load berikutnya saat masuk viewport. */}
+          <div ref={sentinelRef} aria-hidden="true" style={{ height: '1px' }} />
+
           {loading && <LoadingSpinner />}
+
+          {/* Fallback manual: tetap bisa memuat halaman berikutnya walau
+              auto-scroll tidak aktif (browser lama / mode hemat energi). */}
+          {hasMore && !activeGenre && !loading && (
+            <div style={{ textAlign: 'center', padding: '24px' }}>
+              <button
+                onClick={loadMoreFilms}
+                className="btn btn-secondary"
+                style={{ cursor: 'pointer' }}
+                tabIndex={0}
+              >
+                Muat film lainnya
+              </button>
+            </div>
+          )}
 
           {!hasMore && !activeGenre && films.length > 0 && (
             <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
